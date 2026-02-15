@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Nutrición - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="LogoMLsinfondo.png">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="LogoMLsinfondo.png" alt="ML Nutrición">
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Página inicial</span>
+                </a>
+
+                <div class="nav-section-title">GESTIÓN</div>
+
+                <a href="#" class="nav-item" data-target="agenda">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span>Agenda</span>
+                </a>
+                <a href="#" class="nav-item" data-target="clients">
+                    <i class="fa-regular fa-user"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="#" class="nav-item" data-target="foods">
+                    <i class="fa-solid fa-apple-whole"></i>
+                    <span>Alimentos</span>
+                </a>
+                <a href="#" class="nav-item" data-target="equivalences">
+                    <i class="fa-solid fa-right-left"></i>
+                    <span>Equivalencias</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configuración</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="page-title" id="pageTitle">Buenas tardes, Javier</div>
+
+                <div class="top-bar-actions">
+                    <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+                    <button class="icon-btn"><i class="fa-regular fa-envelope"></i></button>
+                    <div class="user-profile">
+                        <img src="avatar.png" alt="Profile" class="avatar-small">
+                        <div class="user-info">
+                            <span class="name">Javier de Oña</span>
+                            <span class="role">Nutricionista</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div class="views-container">
+
+                <!-- Dashboard View -->
+                <div id="dashboard-view" class="view active">
+                    <div class="dashboard-grid">
+                        <!-- Left Column -->
+                        <div class="dashboard-left">
+                            <div class="section-header">
+                                <h3>Próxima consulta</h3>
+                                <span class="tag warning">1ª</span>
+                                <span class="tag danger">Retrasada</span>
+                            </div>
+
+                            <div class="card next-appointment">
+                                <div class="appointment-header">
+                                    <img src="avatar.png" alt="Client" class="avatar-medium">
+                                    <div class="client-details">
+                                        <h4>Cliente ejemplo</h4>
+                                        <p>26 de enero | 09:00 - 09:30</p>
+                                    </div>
+                                    <button class="icon-btn-naked"><i
+                                            class="fa-solid fa-ellipsis-vertical"></i></button>
+                                </div>
+                                <button class="btn btn-primary full-width">Iniciar consulta</button>
+                            </div>
+
+                            <div class="section-header mt-large">
+                                <h3>Próximas consultas</h3>
+                                <a href="#" class="link-arrow">Abrir calendario <i
+                                        class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+
+                            <div class="appointments-list">
+                                <div class="card empty-state">
+                                    <div class="empty-icon"><i class="fa-regular fa-calendar-xmark"></i></div>
+                                    <p>Esta lista está vacía</p>
+                                    <small>No tienes más ninguna consulta programada.</small>
+                                    <button class="btn btn-secondary mt-small">Programar consulta</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="dashboard-right">
+                            <div class="section-header">
+                                <h3>Mis estadísticas mensuales</h3>
+                            </div>
+
+                            <div class="stats-grid">
+                                <div class="card stat-card">
+                                    <div class="stat-icon purple"><i class="fa-regular fa-face-smile"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-value">1</span>
+                                        <span class="stat-label">Nuevos clientes</span>
+                                    </div>
+                                </div>
+                                <div class="card stat-card">
+                                    <div class="stat-icon blue"><i class="fa-regular fa-calendar-check"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-value">0</span>
+                                        <span class="stat-label">Citas completadas</span>
+                                    </div>
+                                </div>
+                                <div class="card stat-card">
+                                    <div class="stat-icon green"><i class="fa-solid fa-percent"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-value">0%</span>
+                                        <span class="stat-label">Clientes con > 1 cita</span>
+                                    </div>
+                                </div>
+                                <div class="card stat-card">
+                                    <div class="stat-icon yellow"><i class="fa-regular fa-envelope"></i></div>
+                                    <div class="stat-info">
+                                        <span class="stat-value">1</span>
+                                        <span class="stat-label">Mensajes enviados</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tabs-small mt-large">
+                                <div class="tab active">Citas canceladas</div>
+                                <div class="tab">Últimos mensajes</div>
+                            </div>
+                            <div class="card empty-state mini">
+                                <div class="empty-icon small"><i class="fa-regular fa-calendar-xmark"></i></div>
+                                <p>Esta lista está vacía</p>
+                            </div>
+                            <div class="text-center mt-small">
+                                <a href="#" class="link-arrow">Ver todas las actividades <i
+                                        class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clients View -->
+                <div id="clients-view" class="view">
+                    <div class="view-header">
+                        <div class="header-left">
+                            <div class="search-bar">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" placeholder="Buscar clientes..." id="clientSearch">
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <button class="btn btn-primary" id="addClientBtn"><i class="fa-solid fa-plus"></i> Añadir
+                                cliente</button>
+                        </div>
+                    </div>
+
+                    <div class="clients-list-container" id="clientsList">
+                        <!-- Clients will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Client Profile View -->
+                <div id="client-profile-view" class="view">
+                    <div class="view-header">
+                        <button class="btn-back" id="backToClients"><i class="fa-solid fa-arrow-left"></i> Volver a
+                            clientes</button>
+                        <div class="header-actions">
+                            <button class="btn btn-danger" id="deleteClientProfileBtn"><i
+                                    class="fa-regular fa-trash-can"></i> Eliminar Cliente</button>
+                        </div>
+                    </div>
+
+                    <div class="profile-header-card card mt-small">
+                        <div class="profile-main-info">
+                            <div class="avatar-wrapper" id="avatarWrapper">
+                                <img src="avatar.png" alt="Client Photo" class="avatar-large" id="profilePhoto">
+                                <div class="avatar-overlay">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                            </div>
+                            <div class="profile-text">
+                                <h2 id="profileName">Nombre Cliente</h2>
+                                <div class="profile-meta">
+                                    <span id="profileAge">30 años</span> •
+                                    <span id="profileEmail">email@ejemplo.com</span> •
+                                    <span id="profilePhone">+34 600 000 000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-tabs mt-medium">
+                        <button class="profile-tab active" data-tab="info">Anamnesis</button>
+                        <button class="profile-tab" data-tab="measurements">Mediciones</button>
+                        <button class="profile-tab" data-tab="planning">Planificación</button>
+                        <button class="profile-tab" data-tab="nutrition">Plan Nutricional</button>
+                        <button class="profile-tab" data-tab="recommendations">Recomendaciones</button>
+                        <button class="profile-tab" data-tab="followup">Seguimiento</button>
+                    </div>
+
+                    <div class="profile-content mt-medium">
+                        <div id="tab-info" class="tab-content active">
+                            <div class="view-header" style="margin-bottom: 1rem;">
+                                <h3 style="margin: 0;">Historial de Anamnesis</h3>
+                                <button class="btn btn-primary" id="addAnamnesisBtn"><i class="fa-solid fa-plus"></i>
+                                    Nueva Anamnesis</button>
+                            </div>
+                            <div id="anamnesisList">
+                                <div class="card empty-state">
+                                    <div class="empty-icon"><i class="fa-regular fa-file-lines"></i></div>
+                                    <p>No hay anamnesis registradas</p>
+                                    <small>Crea la primera anamnesis para este cliente</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-measurements" class="tab-content">
+                            <div class="measurements-wrapper">
+                                <!-- Left Column: Categories and Measurements List -->
+                                <div class="measurements-sidebar">
+                                    <div class="measurements-header">
+                                        <h3>Mediciones</h3>
+                                        <button class="btn btn-primary" id="addMeasurementBtn">
+                                            <i class="fa-solid fa-plus"></i> Registrar nueva medición
+                                        </button>
+                                    </div>
+
+                                    <!-- Mediciones Básicas -->
+                                    <div class="measurement-category">
+                                        <h4 class="category-title">
+                                            <i class="fa-solid fa-weight-scale"></i> Mediciones básicas
+                                        </h4>
+                                        <div class="measurement-items">
+                                            <div class="measurement-item" data-field="peso" data-unit="kg">
+                                                <span class="measurement-name">Peso</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="altura" data-unit="cm">
+                                                <span class="measurement-name">Altura</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="porcentaje_grasa" data-unit="%">
+                                                <span class="measurement-name">Porcentaje de masa grasa</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="masa_muscular" data-unit="kg">
+                                                <span class="measurement-name">Masa muscular</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="grasa_visceral" data-unit="">
+                                                <span class="measurement-name">Grasa visceral</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Perímetros -->
+                                    <div class="measurement-category">
+                                        <h4 class="category-title">
+                                            <i class="fa-solid fa-ruler"></i> Perímetros cutáneos
+                                        </h4>
+                                        <div class="measurement-items">
+                                            <div class="measurement-item" data-field="perimetro_gemelo" data-unit="cm">
+                                                <span class="measurement-name">Perímetro gemelo</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_bajo_muslo"
+                                                data-unit="cm">
+                                                <span class="measurement-name">Perímetro bajo muslo</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_superior_muslo"
+                                                data-unit="cm">
+                                                <span class="measurement-name">Perímetro superior muslo</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_cadera" data-unit="cm">
+                                                <span class="measurement-name">Perímetro cadera</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_abdominal"
+                                                data-unit="cm">
+                                                <span class="measurement-name">Perímetro abdominal</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_cintura" data-unit="cm">
+                                                <span class="measurement-name">Perímetro cintura</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_pectoral"
+                                                data-unit="cm">
+                                                <span class="measurement-name">Perímetro pectoral</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_hombros" data-unit="cm">
+                                                <span class="measurement-name">Perímetro hombros</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_brazo_relajado"
+                                                data-unit="cm">
+                                                <span class="measurement-name">Perímetro brazo relajado</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="perimetro_brazo_flexion"
+                                                data-unit="cm">
+                                                <span class="measurement-name">Perímetro brazo en flexión</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pliegues -->
+                                    <div class="measurement-category">
+                                        <h4 class="category-title">
+                                            <i class="fa-solid fa-hand-point-up"></i> Pliegues
+                                        </h4>
+                                        <div class="measurement-items">
+                                            <div class="measurement-item" data-field="pliegue_bicipital" data-unit="mm">
+                                                <span class="measurement-name">Pliegue bicipital</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="pliegue_tricipital"
+                                                data-unit="mm">
+                                                <span class="measurement-name">Pliegue tricipital</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="pliegue_subescapular"
+                                                data-unit="mm">
+                                                <span class="measurement-name">Pliegue subescapular</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                            <div class="measurement-item" data-field="pliegue_suprailíaco"
+                                                data-unit="mm">
+                                                <span class="measurement-name">Pliegue suprailíaco</span>
+                                                <span class="measurement-value">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Dynamic Panel -->
+                                <div class="measurements-panel">
+                                    <!-- Empty State -->
+                                    <div class="measurements-empty-state" id="measurementsEmptyState">
+                                        <div class="empty-icon"><i class="fa-solid fa-chart-line"></i></div>
+                                        <p>Selecciona una medición</p>
+                                        <small>Haz clic en cualquier medición de la izquierda para ver su historial y
+                                            gráfica</small>
+                                    </div>
+
+                                    <!-- Dynamic Content -->
+                                    <div class="measurements-detail-view" id="measurementsDetailView"
+                                        style="display: none;">
+                                        <!-- Header -->
+                                        <div class="measurements-detail-header">
+                                            <h3 id="selectedMeasurementTitle">—</h3>
+                                        </div>
+
+                                        <!-- Latest Measurements Card -->
+                                        <div class="card measurements-history-card">
+                                            <h4><i class="fa-regular fa-clock"></i> Últimas mediciones</h4>
+                                            <div id="measurementHistoryList" class="measurement-history-container">
+                                                <!-- Populated dynamically -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Progress Chart Card -->
+                                        <div class="card measurements-chart-card">
+                                            <h4><i class="fa-solid fa-chart-line"></i> Progreso</h4>
+                                            <div class="chart-container">
+                                                <canvas id="measurementChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Other tabs placeholders -->
+                        <div id="tab-planning" class="tab-content">
+                            <div class="planning-container">
+                                <!-- 1. Cálculos -->
+                                <div class="card planning-card">
+                                    <h3>Cálculos</h3>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                        <div class="form-group">
+                                            <label for="planningKcal">Necesidades energéticas diarias</label>
+                                            <div class="input-group">
+                                                <input type="number" id="planningKcal" class="form-input text-center"
+                                                    placeholder="2000" min="0">
+                                                <span class="input-group-text">kcal/día</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="planningGasto">Gasto energético total</label>
+                                            <div class="input-group">
+                                                <input type="number" id="planningGasto" class="form-input text-center"
+                                                    placeholder="0" min="0">
+                                                <span class="input-group-text">kcal/día</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Distribución de Macronutrientes -->
+                                <div class="card planning-card">
+                                    <div class="card-header-flex">
+                                        <h3>Distribución de los macronutrientes</h3>
+                                        <span id="planningTotalPercent" class="badge">Total: 100%</span>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="planning-table">
+                                            <thead class="header-macros">
+                                                <tr>
+                                                    <th>Macronutriente</th>
+                                                    <th style="width: 40%">Porcentaje (%)</th>
+                                                    <th class="text-center">Cantidad total (g)</th>
+                                                    <th class="text-center">g/kg de peso <small id="planningWeightLabel"
+                                                            class="text-muted"></small></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Lípidos -->
+                                                <tr>
+                                                    <td class="macro-name"><span class="dot dot-fats"></span> Lípidos
+                                                    </td>
+                                                    <td>
+                                                        <div class="percent-control">
+                                                            <input type="number" id="planningFatsPercent"
+                                                                class="percent-input" value="30" min="0" max="100">
+                                                            <span class="percent-symbol">%</span>
+                                                            <input type="range" id="planningFatsRange"
+                                                                class="percent-range range-fats" value="30" min="0"
+                                                                max="100">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center" id="planningFatsGrams">—</td>
+                                                    <td class="text-center" id="planningFatsGkg">—</td>
+                                                </tr>
+                                                <!-- Carbohidratos -->
+                                                <tr>
+                                                    <td class="macro-name"><span class="dot dot-carbs"></span> Hidratos
+                                                        de carbono</td>
+                                                    <td>
+                                                        <div class="percent-control">
+                                                            <input type="number" id="planningCarbsPercent"
+                                                                class="percent-input" value="50" min="0" max="100">
+                                                            <span class="percent-symbol">%</span>
+                                                            <input type="range" id="planningCarbsRange"
+                                                                class="percent-range range-carbs" value="50" min="0"
+                                                                max="100">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center" id="planningCarbsGrams">—</td>
+                                                    <td class="text-center" id="planningCarbsGkg">—</td>
+                                                </tr>
+                                                <!-- Proteínas -->
+                                                <tr>
+                                                    <td class="macro-name"><span class="dot dot-protein"></span>
+                                                        Proteínas</td>
+                                                    <td>
+                                                        <div class="percent-control">
+                                                            <input type="number" id="planningProtPercent"
+                                                                class="percent-input" value="20" min="0" max="100">
+                                                            <span class="percent-symbol">%</span>
+                                                            <input type="range" id="planningProtRange"
+                                                                class="percent-range range-protein" value="20" min="0"
+                                                                max="100">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center" id="planningProtGrams">—</td>
+                                                    <td class="text-center" id="planningProtGkg">—</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Fibra -->
+                                <div class="card planning-card">
+                                    <h3>Cuantificación de nutrientes</h3>
+                                    <table class="planning-table">
+                                        <thead class="header-nutrients">
+                                            <tr>
+                                                <th></th>
+                                                <th>Fuente</th>
+                                                <th class="text-center" width="150">Cantidad (g)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="macro-name">Fibra alimentaria</td>
+                                                <td><input type="text" id="planningFiberSource" class="clean-input"
+                                                        placeholder="Ej: Verduras, frutas..."></td>
+                                                <td><input type="number" id="planningFiberGrams"
+                                                        class="clean-input text-center" placeholder="0"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Botón Guardar -->
+                                <div class="planning-actions">
+                                    <button id="savePlanningBtn" class="btn btn-primary btn-lg">
+                                        <i class="fa-solid fa-save"></i> Guardar planificación
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-nutrition" class="tab-content">
+                            <div class="card">
+                                <h3>Plan Nutricional</h3>
+                            </div>
+                        </div>
+                        <div id="tab-recommendations" class="tab-content">
+                            <div class="card planning-card"
+                                style="height: calc(100vh - 200px); display: flex; flex-direction: column;">
+                                <div class="card-header-flex">
+                                    <h3>Recomendaciones</h3>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <button id="regenerateTextBtn" class="btn btn-sm btn-outline-secondary"
+                                            title="Regenerar encabezado">
+                                            <i class="fa-solid fa-rotate-right"></i> Actualizar encabezado
+                                        </button>
+                                        <button id="saveRecommendationsBtn" class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-floppy-disk"></i> Guardar recomendación
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="editor-toolbar">
+                                    <button type="button" onclick="formatDoc('bold')" title="Negrita"><i
+                                            class="fa-solid fa-bold"></i></button>
+                                    <button type="button" onclick="formatDoc('italic')" title="Cursiva"><i
+                                            class="fa-solid fa-italic"></i></button>
+                                    <button type="button" onclick="formatDoc('underline')" title="Subrayado"><i
+                                            class="fa-solid fa-underline"></i></button>
+                                    <button type="button" onclick="formatDoc('insertUnorderedList')" title="Lista"><i
+                                            class="fa-solid fa-list-ul"></i></button>
+                                    <div style="width: 1px; height: 20px; background: #ddd; margin: 0 5px;"></div>
+                                    <input type="color" onchange="formatDoc('foreColor', this.value)"
+                                        title="Color de texto"
+                                        style="height: 25px; cursor: pointer; border:none; background: transparent;">
+                                </div>
+
+                                <div id="recommendationsEditor" class="recommendations-editor" contenteditable="true"
+                                    style="border-top: none;"></div>
+
+                                <!-- Hidden textarea removed as we use div now -->
+                            </div>
+                        </div>
+                        <div id="tab-followup" class="tab-content">
+                            <div class="card">
+                                <h3>Seguimiento</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="addClientModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Añadir nuevo cliente</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addClientForm">
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Nombre</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group half">
+                            <label>Apellido</label>
+                            <input type="text" name="surname" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" name="dob" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Teléfono</label>
+                            <input type="tel" name="phone">
+                        </div>
+                        <div class="form-group half">
+                            <label>Correo Electrónico</label>
+                            <input type="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Anamnesis -->
+    <div class="modal-overlay" id="addAnamnesisModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h3>Nueva Anamnesis</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addAnamnesisForm">
+                    <!-- Datos Básicos -->
+                    <div class="form-section">
+                        <h4>Datos Básicos</h4>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Centro de entrenamiento</label>
+                                <input type="text" name="centro_entrenamiento">
+                            </div>
+                            <div class="form-group half">
+                                <label>Estatura (cm)</label>
+                                <input type="number" name="estatura" step="0.1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Analítica</label>
+                            <input type="text" name="analitica">
+                        </div>
+                        <div class="form-group">
+                            <label>Comentarios Analítica</label>
+                            <textarea name="analitica_comentarios" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Objetivo</label>
+                            <textarea name="objetivo" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Sueño -->
+                    <div class="form-section">
+                        <h4>Sueño (horas por día)</h4>
+                        <div class="week-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Lunes</th>
+                                        <th>Martes</th>
+                                        <th>Miércoles</th>
+                                        <th>Jueves</th>
+                                        <th>Viernes</th>
+                                        <th>Sábado</th>
+                                        <th>Domingo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="number" name="sueno_lunes" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="sueno_martes" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="sueno_miercoles" step="0.5" min="0" max="24">
+                                        </td>
+                                        <td><input type="number" name="sueno_jueves" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="sueno_viernes" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="sueno_sabado" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="sueno_domingo" step="0.5" min="0" max="24"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <label>Observaciones Sueño</label>
+                            <textarea name="sueno_observaciones" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Trabajo -->
+                    <div class="form-section">
+                        <h4>Trabajo (horas por día)</h4>
+                        <div class="week-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Lunes</th>
+                                        <th>Martes</th>
+                                        <th>Miércoles</th>
+                                        <th>Jueves</th>
+                                        <th>Viernes</th>
+                                        <th>Sábado</th>
+                                        <th>Domingo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="number" name="trabajo_lunes" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="trabajo_martes" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="trabajo_miercoles" step="0.5" min="0" max="24">
+                                        </td>
+                                        <td><input type="number" name="trabajo_jueves" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="trabajo_viernes" step="0.5" min="0" max="24">
+                                        </td>
+                                        <td><input type="number" name="trabajo_sabado" step="0.5" min="0" max="24"></td>
+                                        <td><input type="number" name="trabajo_domingo" step="0.5" min="0" max="24">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <label>Observaciones Trabajo</label>
+                            <textarea name="trabajo_observaciones" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Actividad Física y otros -->
+                    <div class="form-section">
+                        <h4>Estilo de Vida</h4>
+                        <div class="form-group">
+                            <label>Actividad Física</label>
+                            <textarea name="actividad_fisica" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Suplementación</label>
+                            <textarea name="suplementacion" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Medicación</label>
+                            <textarea name="medicacion" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Preferencias Alimentarias -->
+                    <div class="form-section">
+                        <h4>Preferencias Alimentarias</h4>
+                        <div class="form-group">
+                            <label>Alimentos Favoritos</label>
+                            <textarea name="alimentos_favoritos" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Alimentos Odiados</label>
+                            <textarea name="alimentos_odiados" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Intolerancias o Alergias</label>
+                            <textarea name="intolerancias" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Función Intestinal</label>
+                            <textarea name="funcion_intestinal" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Reporte Dietético -->
+                    <div class="form-section">
+                        <h4>Reporte Dietético</h4>
+                        <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Selecciona los alimentos que el
+                            cliente consume habitualmente</p>
+
+                        <!-- Fuente de Carbohidratos -->
+                        <div class="food-category">
+                            <h5>Fuente de Carbohidratos</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="carbs" value="Arroz"> Arroz</label>
+                                <label><input type="checkbox" name="carbs" value="Pasta"> Pasta</label>
+                                <label><input type="checkbox" name="carbs" value="Tortas de maíz"> Tortas de
+                                    maíz</label>
+                                <label><input type="checkbox" name="carbs" value="Avena"> Avena</label>
+                                <label><input type="checkbox" name="carbs" value="Pan"> Pan</label>
+                                <label><input type="checkbox" name="carbs" value="Boniato"> Boniato</label>
+                                <label><input type="checkbox" name="carbs" value="Patata"> Patata</label>
+                                <label><input type="checkbox" name="carbs" value="Calabaza"> Calabaza</label>
+                            </div>
+                        </div>
+
+                        <!-- Fuentes Proteicas -->
+                        <div class="food-category">
+                            <h5>Carnes</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="carnes" value="Pollo"> Pollo</label>
+                                <label><input type="checkbox" name="carnes" value="Pavo"> Pavo</label>
+                                <label><input type="checkbox" name="carnes" value="Conejo"> Conejo</label>
+                                <label><input type="checkbox" name="carnes" value="Ternera"> Ternera</label>
+                                <label><input type="checkbox" name="carnes" value="Hamburguesa"> Hamburguesa</label>
+                                <label><input type="checkbox" name="carnes" value="Cerdo"> Cerdo</label>
+                                <label><input type="checkbox" name="carnes" value="Potro"> Potro</label>
+                            </div>
+                        </div>
+
+                        <div class="food-category">
+                            <h5>Embutidos</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="embutidos" value="Pavo"> Pavo</label>
+                                <label><input type="checkbox" name="embutidos" value="Jamón York"> Jamón York</label>
+                                <label><input type="checkbox" name="embutidos" value="Jamón Serrano"> Jamón
+                                    Serrano</label>
+                                <label><input type="checkbox" name="embutidos" value="Cecina"> Cecina</label>
+                            </div>
+                        </div>
+
+                        <div class="food-category">
+                            <h5>Pescado Blanco</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="pescado_blanco" value="Lubina"> Lubina</label>
+                                <label><input type="checkbox" name="pescado_blanco" value="Merluza"> Merluza</label>
+                                <label><input type="checkbox" name="pescado_blanco" value="Bacalao"> Bacalao</label>
+                                <label><input type="checkbox" name="pescado_blanco" value="Lenguado"> Lenguado</label>
+                                <label><input type="checkbox" name="pescado_blanco" value="Rape"> Rape</label>
+                            </div>
+                        </div>
+
+                        <div class="food-category">
+                            <h5>Marisco</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="marisco" value="Gambas"> Gambas</label>
+                                <label><input type="checkbox" name="marisco" value="Langostinos"> Langostinos</label>
+                                <label><input type="checkbox" name="marisco" value="Cangrejo"> Cangrejo</label>
+                                <label><input type="checkbox" name="marisco" value="Pulpo"> Pulpo</label>
+                                <label><input type="checkbox" name="marisco" value="Sepia"> Sepia</label>
+                                <label><input type="checkbox" name="marisco" value="Calamar"> Calamar</label>
+                            </div>
+                        </div>
+
+                        <div class="food-category">
+                            <h5>Pescado Graso</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="pescado_graso" value="Salmón"> Salmón</label>
+                                <label><input type="checkbox" name="pescado_graso" value="Atún"> Atún</label>
+                                <label><input type="checkbox" name="pescado_graso" value="Emperador"> Emperador</label>
+                                <label><input type="checkbox" name="pescado_graso" value="Boquerones">
+                                    Boquerones</label>
+                                <label><input type="checkbox" name="pescado_graso" value="Caballa"> Caballa</label>
+                                <label><input type="checkbox" name="pescado_graso" value="Sardinas"> Sardinas</label>
+                            </div>
+                        </div>
+
+                        <div class="food-category">
+                            <h5>Lácteos</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="lacteos" value="Leche"> Leche</label>
+                                <label><input type="checkbox" name="lacteos" value="Yogures"> Yogures</label>
+                                <label><input type="checkbox" name="lacteos" value="Queso fresco"> Queso fresco</label>
+                                <label><input type="checkbox" name="lacteos" value="Mantequilla"> Mantequilla</label>
+                            </div>
+                        </div>
+
+                        <!-- Fuente de Fibra -->
+                        <div class="food-category">
+                            <h5>Legumbres</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="legumbres" value="Garbanzos"> Garbanzos</label>
+                                <label><input type="checkbox" name="legumbres" value="Lentejas"> Lentejas</label>
+                                <label><input type="checkbox" name="legumbres" value="Guisantes"> Guisantes</label>
+                                <label><input type="checkbox" name="legumbres" value="Judías"> Judías</label>
+                                <label><input type="checkbox" name="legumbres" value="Alubias"> Alubias</label>
+                            </div>
+                        </div>
+
+                        <div class="food-category">
+                            <h5>Frutos Secos</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="frutos_secos" value="Almendras"> Almendras</label>
+                                <label><input type="checkbox" name="frutos_secos" value="Nueces"> Nueces</label>
+                                <label><input type="checkbox" name="frutos_secos" value="Pasas"> Pasas</label>
+                            </div>
+                        </div>
+
+                        <!-- Fuente de Grasas -->
+                        <div class="food-category">
+                            <h5>Fuente de Grasas</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="grasas" value="Aceite de oliva"> Aceite de
+                                    oliva</label>
+                                <label><input type="checkbox" name="grasas" value="Aguacate"> Aguacate</label>
+                                <label><input type="checkbox" name="grasas" value="Aceitunas"> Aceitunas</label>
+                                <label><input type="checkbox" name="grasas" value="Crema de frutos secos"> Crema de
+                                    frutos secos</label>
+                            </div>
+                        </div>
+
+                        <!-- Frutas -->
+                        <div class="food-category">
+                            <h5>Frutas</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="frutas" value="Sandía"> Sandía</label>
+                                <label><input type="checkbox" name="frutas" value="Melón"> Melón</label>
+                                <label><input type="checkbox" name="frutas" value="Melocotón"> Melocotón</label>
+                                <label><input type="checkbox" name="frutas" value="Plátano"> Plátano</label>
+                                <label><input type="checkbox" name="frutas" value="Pera"> Pera</label>
+                                <label><input type="checkbox" name="frutas" value="Manzana"> Manzana</label>
+                                <label><input type="checkbox" name="frutas" value="Frutos rojos"> Frutos rojos</label>
+                                <label><input type="checkbox" name="frutas" value="Nectarina"> Nectarina</label>
+                                <label><input type="checkbox" name="frutas" value="Naranja"> Naranja</label>
+                                <label><input type="checkbox" name="frutas" value="Mandarina"> Mandarina</label>
+                                <label><input type="checkbox" name="frutas" value="Limón"> Limón</label>
+                                <label><input type="checkbox" name="frutas" value="Granada"> Granada</label>
+                            </div>
+                        </div>
+
+                        <!-- Verduras -->
+                        <div class="food-category">
+                            <h5>Verduras</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="verduras" value="Calabacín"> Calabacín</label>
+                                <label><input type="checkbox" name="verduras" value="Pimiento"> Pimiento</label>
+                                <label><input type="checkbox" name="verduras" value="Zanahoria"> Zanahoria</label>
+                                <label><input type="checkbox" name="verduras" value="Alcachofas"> Alcachofas</label>
+                                <label><input type="checkbox" name="verduras" value="Berenjena"> Berenjena</label>
+                                <label><input type="checkbox" name="verduras" value="Lechuga"> Lechuga</label>
+                                <label><input type="checkbox" name="verduras" value="Cebolla"> Cebolla</label>
+                                <label><input type="checkbox" name="verduras" value="Tomate"> Tomate</label>
+                                <label><input type="checkbox" name="verduras" value="Brócoli"> Brócoli</label>
+                            </div>
+                        </div>
+
+                        <!-- Otros -->
+                        <div class="food-category">
+                            <h5>Otros</h5>
+                            <div class="food-checkboxes">
+                                <label><input type="checkbox" name="otros" value="Café"> Café</label>
+                                <label><input type="checkbox" name="otros" value="Chocolate/Cacao">
+                                    Chocolate/Cacao</label>
+                                <label><input type="checkbox" name="otros" value="Pan"> Pan</label>
+                                <label><input type="checkbox" name="otros" value="Alcohol"> Alcohol</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plan y Estrategia -->
+                    <div class="form-section">
+                        <h4>Plan Nutricional y Seguimiento</h4>
+                        <div class="form-group">
+                            <label>Supermercado Habitual</label>
+                            <input type="text" name="supermercado">
+                        </div>
+                        <div class="form-group">
+                            <label>Plan Contratado</label>
+                            <textarea name="plan_contratado" rows="2" placeholder="¿3 meses? ¿6 meses?"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Estrategia a Seguir</label>
+                            <textarea name="estrategia" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Valoración Nutricional</label>
+                            <textarea name="valoracion_nutricional" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Anamnesis</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Anamnesis -->
+    <div class="modal-overlay" id="viewAnamnesisModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h3>Detalles de Anamnesis</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="anamnesisDetailsContent">
+                <!-- Content will be dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Añadir Medición -->
+    <div class="modal-overlay" id="addMeasurementModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h3>Registrar nueva medición</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addMeasurementForm">
+                    <div class="form-group">
+                        <label>Fecha de medición</label>
+                        <input type="date" name="fecha" required>
+                    </div>
+
+                    <!-- Mediciones básicas -->
+                    <div class="form-section">
+                        <h4>Mediciones básicas</h4>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Peso (kg)</label>
+                                <input type="number" name="peso" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Altura (cm)</label>
+                                <input type="number" name="altura" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Porcentaje de masa grasa (%)</label>
+                                <input type="number" name="porcentaje_grasa" step="0.01" min="0" max="100">
+                            </div>
+                            <div class="form-group half">
+                                <label>Masa muscular (kg)</label>
+                                <input type="number" name="masa_muscular" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Grasa visceral</label>
+                            <input type="number" name="grasa_visceral" step="0.1" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Perímetros -->
+                    <div class="form-section">
+                        <h4>Perímetros cutáneos (cm)</h4>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Perímetro gemelo</label>
+                                <input type="number" name="perimetro_gemelo" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Perímetro bajo muslo</label>
+                                <input type="number" name="perimetro_bajo_muslo" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Perímetro superior muslo</label>
+                                <input type="number" name="perimetro_superior_muslo" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Perímetro cadera</label>
+                                <input type="number" name="perimetro_cadera" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Perímetro abdominal</label>
+                                <input type="number" name="perimetro_abdominal" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Perímetro cintura</label>
+                                <input type="number" name="perimetro_cintura" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Perímetro pectoral</label>
+                                <input type="number" name="perimetro_pectoral" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Perímetro hombros</label>
+                                <input type="number" name="perimetro_hombros" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Perímetro brazo relajado</label>
+                                <input type="number" name="perimetro_brazo_relajado" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Perímetro brazo en flexión</label>
+                                <input type="number" name="perimetro_brazo_flexion" step="0.01" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pliegues -->
+                    <div class="form-section">
+                        <h4>Pliegues (mm)</h4>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Pliegue bicipital</label>
+                                <input type="number" name="pliegue_bicipital" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Pliegue tricipital</label>
+                                <input type="number" name="pliegue_tricipital" step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>Pliegue subescapular</label>
+                                <input type="number" name="pliegue_subescapular" step="0.01" min="0">
+                            </div>
+                            <div class="form-group half">
+                                <label>Pliegue suprailíaco</label>
+                                <input type="number" name="pliegue_suprailíaco" step="0.01" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar medición</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+    <input type="file" id="photoUploadInput" accept="image/*" style="display: none;">
+</body>
+
+</html>
