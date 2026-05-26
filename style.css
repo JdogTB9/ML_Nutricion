@@ -1559,3 +1559,1543 @@ body {
 .recommendations-editor *:first-child {
     margin-top: 0;
 }
+
+/* ========================================== */
+/* FOODS TAB                                  */
+/* ========================================== */
+
+.foods-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Each food row */
+.food-row {
+    display: grid;
+    grid-template-columns: 1fr repeat(4, 120px);
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    transition: all 0.15s;
+    cursor: pointer;
+    position: relative;
+}
+
+.food-row:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.food-row:last-child {
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 0 0 12px 12px;
+}
+
+.food-row:only-child {
+    border-radius: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.food-row:hover {
+    background: #F0FDFA;
+    z-index: 1;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Food info (left side) */
+.food-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.food-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.food-source {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Nutrient columns */
+.food-nutrient {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+}
+
+.food-nutrient-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.food-nutrient-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.food-nutrient-label i {
+    font-size: 0.7rem;
+}
+
+/* Nutrient icons colors */
+.nutrient-energy { color: #F59E0B; }
+.nutrient-fat { color: #FACC15; }
+.nutrient-carbs { color: #EF4444; }
+.nutrient-protein { color: #3B82F6; }
+
+/* Food actions (edit/delete buttons on hover) */
+.food-actions {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    gap: 0.5rem;
+}
+
+.food-row:hover .food-actions {
+    display: flex;
+}
+
+.food-action-btn {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.food-action-btn:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.food-action-btn.delete:hover {
+    color: #EF4444;
+    border-color: #EF4444;
+    background: #FEF2F2;
+}
+
+/* Sort select */
+.form-select-sm {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    font-size: 0.9rem;
+    color: var(--text-color);
+    outline: none;
+    cursor: pointer;
+    appearance: auto;
+}
+
+.form-select-sm:focus {
+    border-color: var(--primary-color);
+}
+
+/* Food count badge */
+.food-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .food-row {
+        grid-template-columns: 1fr repeat(4, 80px);
+        padding: 1rem;
+    }
+
+    .food-nutrient-value {
+        font-size: 0.85rem;
+    }
+}
+
+/* ========================================== */
+/* EQUIVALENCES MODULE                        */
+/* ========================================== */
+
+/* Main list - reuse food-row style */
+.equiv-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.equiv-row {
+    display: grid;
+    grid-template-columns: 1fr repeat(4, 120px);
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    transition: all 0.15s;
+    cursor: pointer;
+    position: relative;
+}
+
+.equiv-row:first-child { border-radius: 12px 12px 0 0; }
+.equiv-row:last-child { border-bottom: 1px solid var(--border-color); border-radius: 0 0 12px 12px; }
+.equiv-row:only-child { border-radius: 12px; border-bottom: 1px solid var(--border-color); }
+
+.equiv-row:hover {
+    background: #F0FDFA;
+    z-index: 1;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Detail view */
+.equiv-name-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+}
+
+.equiv-name-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.equiv-name-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.equiv-name-input {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.equiv-name-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(56, 199, 165, 0.1);
+}
+
+.equiv-detail-card {
+    padding: 1.5rem;
+}
+
+.equiv-detail-card h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* Reference food */
+.equiv-reference-section {
+    margin-bottom: 1rem;
+}
+
+.equiv-reference-item {
+    background: #F8FAFC;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.equiv-reference-item .equiv-item-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.equiv-reference-item .equiv-item-text input {
+    width: 60px;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    outline: none;
+}
+
+.equiv-reference-item .equiv-item-text input:focus {
+    border-color: var(--primary-color);
+}
+
+.equiv-ref-macros {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+    margin-left: auto;
+    margin-right: 0.75rem;
+}
+
+.equiv-item-remove {
+    flex-shrink: 0;
+}
+
+.equiv-custom-name {
+    border: none;
+    border-bottom: 1px dashed var(--border-color);
+    padding: 0.15rem 0.3rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: transparent;
+    outline: none;
+    min-width: 120px;
+    max-width: 220px;
+    transition: border-color 0.2s;
+}
+
+.equiv-custom-name:focus {
+    border-bottom-color: var(--primary-color);
+    border-bottom-style: solid;
+}
+
+.equiv-custom-name::placeholder {
+    font-weight: 600;
+    color: var(--text-color);
+    opacity: 1;
+}
+
+/* ========================================== */
+/* REVISIONES TAB                             */
+/* ========================================== */
+
+.revision-card {
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+.revision-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+}
+
+.revision-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.revision-card-header h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-color);
+}
+
+.revision-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.revision-preview {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* ========================================== */
+/* DASHBOARD REDESIGN                         */
+/* ========================================== */
+
+.dashboard-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.dashboard-revisiones-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dashboard-revision-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dashboard-revision-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+}
+
+.dashboard-revision-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-revision-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.dashboard-revision-top strong {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.dashboard-revision-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.dashboard-revision-text {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    line-height: 1.4;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .dashboard-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Equivalent foods list */
+.equiv-foods-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.equiv-food-chip {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    transition: all 0.2s;
+    flex: 1 1 calc(50% - 0.75rem);
+    min-width: 280px;
+}
+
+.equiv-food-chip .chip-prefix {
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-right: 0.25rem;
+}
+
+.equiv-food-chip input.chip-qty {
+    width: 50px;
+    padding: 0.25rem 0.3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    outline: none;
+    font-size: 0.85rem;
+}
+
+.equiv-food-chip input.chip-qty:focus {
+    border-color: var(--primary-color);
+}
+
+.equiv-food-chip .chip-name {
+    font-weight: 500;
+    flex: 1;
+}
+
+.chip-macros {
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+    margin-left: auto;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+}
+
+/* Add food section */
+.equiv-add-section {
+    background: #F8FAFC;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+
+.equiv-add-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.equiv-search-controls {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+/* Table header for food results */
+.equiv-food-table-header {
+    display: grid;
+    grid-template-columns: 1fr 80px 60px 70px 65px 40px;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.col-info-nutricional { text-align: left; }
+.col-nutrient { text-align: center; }
+.col-action { text-align: center; }
+
+/* Food result rows */
+.equiv-food-results {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.equiv-food-result-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 60px 70px 65px 40px;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    align-items: center;
+    border-bottom: 1px solid #F3F4F6;
+    transition: background 0.15s;
+}
+
+.equiv-food-result-row:hover {
+    background: #F0FDFA;
+}
+
+.equiv-food-result-row:last-child {
+    border-bottom: none;
+}
+
+/* Quantity control in results */
+.equiv-qty-control {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.equiv-qty-control input {
+    width: 50px;
+    padding: 0.3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.equiv-qty-control input:focus {
+    border-color: var(--primary-color);
+}
+
+.equiv-qty-control .qty-unit {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.equiv-qty-control .qty-total {
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.equiv-result-food-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.equiv-result-food-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.equiv-result-food-source {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.equiv-result-nutrient {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Blue add button */
+.equiv-add-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: #93C5FD;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.equiv-add-btn:hover {
+    background: #3B82F6;
+    transform: scale(1.05);
+}
+
+.text-muted {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ========================================== */
+/* NUTRITION PLAN MODULE                      */
+/* ========================================== */
+
+.nutrition-plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.nutrition-plan-title-bar {
+    flex: 1;
+}
+
+.nutrition-title-input {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.nutrition-title-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(56, 199, 165, 0.1);
+}
+
+.nutrition-plan-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.nutrition-meals-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ---- Meal Card ---- */
+.meal-card {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.meal-card-header {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+}
+
+.meal-card-header:hover {
+    background: #FAFAFA;
+}
+
+.meal-time {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--secondary-color);
+    margin-right: 1.5rem;
+    min-width: 50px;
+}
+
+.meal-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-color);
+    flex: 1;
+}
+
+.meal-toggle-icon {
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: transform 0.3s;
+}
+
+.meal-card.collapsed .meal-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.meal-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+
+/* ---- Meal Body ---- */
+.meal-card-body {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.meal-card.collapsed .meal-card-body {
+    display: none;
+}
+
+/* ---- Plato Section ---- */
+.plato-section {
+    margin-bottom: 1.25rem;
+}
+
+.plato-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.plato-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--primary-dark);
+}
+
+.plato-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+
+/* ---- Items inside a plato ---- */
+.plato-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.plato-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    background: #F8FAFC;
+    border-radius: 8px;
+    border: 1px solid #F1F5F9;
+    font-size: 0.9rem;
+}
+
+.plato-item-qty {
+    width: 55px;
+    padding: 0.25rem 0.35rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.plato-item-qty:focus {
+    border-color: var(--primary-color);
+}
+
+.plato-item-unit {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.plato-item-name {
+    font-weight: 500;
+    flex: 1;
+}
+
+.plato-item-name-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px dashed var(--border-color);
+    padding: 0.15rem 0.3rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+    background: transparent;
+    outline: none;
+    min-width: 100px;
+    transition: border-color 0.2s;
+}
+
+.plato-item-name-input:focus {
+    border-bottom-color: var(--primary-color);
+    border-bottom-style: solid;
+}
+
+.plato-item-name-input::placeholder {
+    font-weight: 500;
+    color: var(--text-color);
+    opacity: 1;
+}
+
+/* Equivalence group block inside plato */
+.equiv-group-block {
+    background: #F0F9FF;
+    border: 1px solid #BFDBFE;
+    border-left: 4px solid #3B82F6;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.equiv-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0.5rem 0.5rem;
+}
+
+.equiv-group-block .plato-item {
+    background: var(--white);
+    border: 1px solid #E0E7FF;
+    margin-bottom: 0.3rem;
+}
+
+.equiv-group-block .plato-item:last-child {
+    margin-bottom: 0;
+}
+
+.equiv-ref-item {
+    border-left: 3px solid #3B82F6 !important;
+}
+
+.equiv-alt-item {
+    border-left: 3px solid #CBD5E1 !important;
+    opacity: 0.85;
+}
+
+.equiv-or-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #3B82F6;
+    background: #DBEAFE;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.25rem;
+    white-space: nowrap;
+}
+
+.equiv-alt-macros {
+    opacity: 0.6;
+}
+
+/* ========================================== */
+/* SEGUIMIENTO TAB                            */
+/* ========================================== */
+
+.seguimiento-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* Config list */
+.seguimiento-config-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.seguimiento-medida-card {
+    background: #F8FAFC;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 1rem;
+    position: relative;
+}
+
+.seguimiento-medida-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.seguimiento-medida-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 0.2rem 0;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s;
+    width: 60%;
+}
+
+.seguimiento-medida-name:focus {
+    border-bottom-color: var(--primary-color);
+}
+
+.seguimiento-medida-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.seguimiento-opcion-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.seguimiento-opcion-chip .chip-remove-small {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.seguimiento-opcion-chip .chip-remove-small:hover {
+    color: #EF4444;
+}
+
+.seguimiento-add-opcion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.seguimiento-add-opcion input {
+    width: 100px;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    outline: none;
+}
+
+.seguimiento-add-opcion input:focus {
+    border-color: var(--primary-color);
+}
+
+.seguimiento-add-opcion button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Records */
+.seguimiento-registro-card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.seguimiento-registro-date {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+}
+
+.seguimiento-registro-values {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.seguimiento-registro-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #F3F4F6;
+    font-size: 0.85rem;
+}
+
+.seguimiento-registro-row:last-child {
+    border-bottom: none;
+}
+
+.seguimiento-registro-label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.seguimiento-registro-value {
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+/* ---- Calendar ---- */
+.calendar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-month-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+    min-width: 200px;
+    text-align: center;
+    margin: 0;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color);
+    position: relative;
+    min-height: 42px;
+    padding: 0.3rem;
+}
+
+.calendar-day:hover {
+    background: #F0FDFA;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.calendar-day.today {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 700;
+}
+
+.calendar-day.today:hover {
+    background: var(--primary-dark);
+}
+
+.calendar-day.other-month {
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+.calendar-day.has-record {
+    background: #D1FAE5;
+}
+
+.calendar-day.has-record.today {
+    background: var(--primary-color);
+}
+
+.calendar-day-number {
+    font-size: 0.95rem;
+}
+
+.calendar-day-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    margin-top: 3px;
+}
+
+.calendar-day.today .calendar-day-dot {
+    background: white;
+}
+
+.calendar-day.other-month .calendar-day-dot {
+    display: none;
+}
+
+/* Registro modal fields */
+.registro-field-group {
+    margin-bottom: 1rem;
+}
+
+.registro-field-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-color);
+}
+
+.registro-field-group select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    outline: none;
+    font-size: 0.9rem;
+    background: var(--white);
+    color: var(--text-color);
+}
+
+.registro-field-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(56, 199, 165, 0.2);
+}
+
+.plato-item-equivtag {
+    font-size: 0.7rem;
+    background: #DBEAFE;
+    color: #2563EB;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.plato-item-macros {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.plato-item-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.2rem;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.plato-item-remove:hover {
+    color: #EF4444;
+}
+
+.plato-empty {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 0.5rem 0;
+}
+
+/* ---- Add plato button ---- */
+.add-plato-btn {
+    background: none;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    color: var(--secondary-color);
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.add-plato-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #F0FDFA;
+}
+
+/* ---- Meal Macros Summary ---- */
+.meal-macros-summary {
+    display: flex;
+    gap: 0;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.meal-macro {
+    flex: 1;
+    text-align: center;
+}
+
+.meal-macro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.meal-macro-badge.energy { background: #FEF3C7; color: #D97706; }
+.meal-macro-badge.fat { background: #FEE2E2; color: #DC2626; }
+.meal-macro-badge.carbs { background: #FFEDD5; color: #EA580C; }
+.meal-macro-badge.protein { background: #DBEAFE; color: #2563EB; }
+.meal-macro-badge.fiber { background: #D1FAE5; color: #059669; }
+
+.meal-macro-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+/* ---- Plan Food Search Modal ---- */
+.plan-search-results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.plan-search-row {
+    display: flex;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #F3F4F6;
+    gap: 0.75rem;
+    transition: background 0.15s;
+    cursor: pointer;
+}
+
+.plan-search-row:hover {
+    background: #F0FDFA;
+}
+
+.plan-search-row:last-child {
+    border-bottom: none;
+}
+
+.plan-search-qty {
+    width: 55px;
+    padding: 0.3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.plan-search-qty:focus {
+    border-color: var(--primary-color);
+}
+
+.plan-search-info {
+    flex: 1;
+}
+
+.plan-search-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.plan-search-source {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.plan-search-macros {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.plan-search-add {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: #93C5FD;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.plan-search-add:hover {
+    background: #3B82F6;
+}
+
+/* ========================================== */
+/* NUTRITION PLAN LAYOUT (2 columns)          */
+/* ========================================== */
+
+.nutrition-plan-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.nutrition-plan-left {
+    min-width: 0;
+}
+
+.nutrition-plan-right {
+    position: sticky;
+    top: 2rem;
+}
+
+/* ---- Analysis Panel ---- */
+.analysis-panel {
+    padding: 1.5rem;
+}
+
+.analysis-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.analysis-title i {
+    color: var(--primary-color);
+}
+
+.analysis-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.analysis-bar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.analysis-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.analysis-bar-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.analysis-bar-values {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
+.analysis-bar-values strong {
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.analysis-bar-sep {
+    margin: 0 0.15rem;
+    color: var(--text-muted);
+}
+
+.analysis-bar-track {
+    width: 100%;
+    height: 12px;
+    background: #F1F5F9;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.analysis-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.4s ease;
+    min-width: 0;
+}
+
+.analysis-bar-percent {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    text-align: right;
+}
+
+/* Overflow state: bar turns slightly darker + warning */
+.analysis-bar-fill.overflow {
+    opacity: 0.85;
+    background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 4px,
+        rgba(255,255,255,0.25) 4px,
+        rgba(255,255,255,0.25) 8px
+    );
+}
+
+.analysis-bar-percent.overflow {
+    color: #DC2626;
+}
+
+/* Empty / no planning state */
+.analysis-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted);
+}
+
+.analysis-empty i {
+    font-size: 2rem;
+    color: #FBBF24;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.analysis-empty p {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Pie chart section */
+.analysis-chart-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.analysis-chart-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.analysis-chart-title i {
+    color: var(--primary-color);
+}
+
+.analysis-chart-container {
+    position: relative;
+    height: 220px;
+}
+
+.analysis-chart-container canvas {
+    max-height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .nutrition-plan-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .nutrition-plan-right {
+        position: static;
+    }
+}

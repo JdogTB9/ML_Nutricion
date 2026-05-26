@@ -29,10 +29,6 @@
 
                 <div class="nav-section-title">GESTIÓN</div>
 
-                <a href="#" class="nav-item" data-target="agenda">
-                    <i class="fa-regular fa-calendar"></i>
-                    <span>Agenda</span>
-                </a>
                 <a href="#" class="nav-item" data-target="clients">
                     <i class="fa-regular fa-user"></i>
                     <span>Clientes</span>
@@ -80,93 +76,47 @@
 
                 <!-- Dashboard View -->
                 <div id="dashboard-view" class="view active">
-                    <div class="dashboard-grid">
-                        <!-- Left Column -->
-                        <div class="dashboard-left">
-                            <div class="section-header">
-                                <h3>Próxima consulta</h3>
-                                <span class="tag warning">1ª</span>
-                                <span class="tag danger">Retrasada</span>
-                            </div>
-
-                            <div class="card next-appointment">
-                                <div class="appointment-header">
-                                    <img src="avatar.png" alt="Client" class="avatar-medium">
-                                    <div class="client-details">
-                                        <h4>Cliente ejemplo</h4>
-                                        <p>26 de enero | 09:00 - 09:30</p>
-                                    </div>
-                                    <button class="icon-btn-naked"><i
-                                            class="fa-solid fa-ellipsis-vertical"></i></button>
-                                </div>
-                                <button class="btn btn-primary full-width">Iniciar consulta</button>
-                            </div>
-
-                            <div class="section-header mt-large">
-                                <h3>Próximas consultas</h3>
-                                <a href="#" class="link-arrow">Abrir calendario <i
-                                        class="fa-solid fa-arrow-right"></i></a>
-                            </div>
-
-                            <div class="appointments-list">
-                                <div class="card empty-state">
-                                    <div class="empty-icon"><i class="fa-regular fa-calendar-xmark"></i></div>
-                                    <p>Esta lista está vacía</p>
-                                    <small>No tienes más ninguna consulta programada.</small>
-                                    <button class="btn btn-secondary mt-small">Programar consulta</button>
-                                </div>
+                    <!-- KPIs -->
+                    <div class="dashboard-kpis">
+                        <div class="card stat-card">
+                            <div class="stat-icon purple"><i class="fa-regular fa-user"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="kpiTotalClients">0</span>
+                                <span class="stat-label">Total Clientes</span>
                             </div>
                         </div>
+                        <div class="card stat-card">
+                            <div class="stat-icon blue"><i class="fa-regular fa-clipboard"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="kpiTotalRevisiones">0</span>
+                                <span class="stat-label">Total Revisiones</span>
+                            </div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-icon green"><i class="fa-solid fa-utensils"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="kpiActivePlans">0</span>
+                                <span class="stat-label">Planes Activos</span>
+                            </div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-icon yellow"><i class="fa-solid fa-chart-line"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="kpiAvgRevisiones">0</span>
+                                <span class="stat-label">Media revisiones/cliente</span>
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- Right Column -->
-                        <div class="dashboard-right">
-                            <div class="section-header">
-                                <h3>Mis estadísticas mensuales</h3>
-                            </div>
-
-                            <div class="stats-grid">
-                                <div class="card stat-card">
-                                    <div class="stat-icon purple"><i class="fa-regular fa-face-smile"></i></div>
-                                    <div class="stat-info">
-                                        <span class="stat-value">1</span>
-                                        <span class="stat-label">Nuevos clientes</span>
-                                    </div>
-                                </div>
-                                <div class="card stat-card">
-                                    <div class="stat-icon blue"><i class="fa-regular fa-calendar-check"></i></div>
-                                    <div class="stat-info">
-                                        <span class="stat-value">0</span>
-                                        <span class="stat-label">Citas completadas</span>
-                                    </div>
-                                </div>
-                                <div class="card stat-card">
-                                    <div class="stat-icon green"><i class="fa-solid fa-percent"></i></div>
-                                    <div class="stat-info">
-                                        <span class="stat-value">0%</span>
-                                        <span class="stat-label">Clientes con > 1 cita</span>
-                                    </div>
-                                </div>
-                                <div class="card stat-card">
-                                    <div class="stat-icon yellow"><i class="fa-regular fa-envelope"></i></div>
-                                    <div class="stat-info">
-                                        <span class="stat-value">1</span>
-                                        <span class="stat-label">Mensajes enviados</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tabs-small mt-large">
-                                <div class="tab active">Citas canceladas</div>
-                                <div class="tab">Últimos mensajes</div>
-                            </div>
-                            <div class="card empty-state mini">
-                                <div class="empty-icon small"><i class="fa-regular fa-calendar-xmark"></i></div>
-                                <p>Esta lista está vacía</p>
-                            </div>
-                            <div class="text-center mt-small">
-                                <a href="#" class="link-arrow">Ver todas las actividades <i
-                                        class="fa-solid fa-arrow-right"></i></a>
-                            </div>
+                    <!-- Últimas revisiones -->
+                    <div class="section-header mt-large">
+                        <h3>Últimas revisiones</h3>
+                    </div>
+                    <div id="dashboardRevisiones" class="dashboard-revisiones-list">
+                        <div class="card empty-state">
+                            <div class="empty-icon"><i class="fa-regular fa-clipboard"></i></div>
+                            <p>Aún no hay revisiones</p>
+                            <small>Las revisiones de tus clientes aparecerán aquí</small>
                         </div>
                     </div>
                 </div>
@@ -197,6 +147,8 @@
                         <button class="btn-back" id="backToClients"><i class="fa-solid fa-arrow-left"></i> Volver a
                             clientes</button>
                         <div class="header-actions">
+                            <button class="btn btn-secondary" id="generatePdfBtn"><i
+                                    class="fa-solid fa-file-pdf"></i> Generar PDF</button>
                             <button class="btn btn-danger" id="deleteClientProfileBtn"><i
                                     class="fa-regular fa-trash-can"></i> Eliminar Cliente</button>
                         </div>
@@ -228,6 +180,8 @@
                         <button class="profile-tab" data-tab="nutrition">Plan Nutricional</button>
                         <button class="profile-tab" data-tab="recommendations">Recomendaciones</button>
                         <button class="profile-tab" data-tab="followup">Seguimiento</button>
+                        <button class="profile-tab" data-tab="followup-config">Ajustar seguimiento</button>
+                        <button class="profile-tab" data-tab="revisiones">Revisiones</button>
                     </div>
 
                     <div class="profile-content mt-medium">
@@ -539,8 +493,151 @@
                             </div>
                         </div>
                         <div id="tab-nutrition" class="tab-content">
-                            <div class="card">
-                                <h3>Plan Nutricional</h3>
+                            <!-- Header bar -->
+                            <div class="nutrition-plan-header">
+                                <div class="nutrition-plan-title-bar">
+                                    <input type="text" id="nutritionPlanTitle" class="nutrition-title-input"
+                                        value="Todos los días" placeholder="Título del plan">
+                                </div>
+                                <div class="nutrition-plan-actions">
+                                    <button class="btn btn-secondary" id="addMealBtn">
+                                        <i class="fa-solid fa-plus"></i> Añadir comida
+                                    </button>
+                                    <button class="btn btn-primary" id="saveNutritionPlanBtn">
+                                        <i class="fa-solid fa-floppy-disk"></i> Guardar plan
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="nutrition-plan-layout">
+                                <!-- Left: Meals -->
+                                <div class="nutrition-plan-left">
+                                    <div id="nutritionMealsContainer" class="nutrition-meals-container">
+                                        <div class="card empty-state">
+                                            <div class="empty-icon"><i class="fa-solid fa-utensils"></i></div>
+                                            <p>No hay comidas en el plan</p>
+                                            <small>Añade comidas como Desayuno, Comida, Cena...</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right: Analysis panel -->
+                                <div class="nutrition-plan-right">
+                                    <div class="card analysis-panel" id="nutritionAnalysisPanel">
+                                        <h3 class="analysis-title"><i class="fa-solid fa-chart-bar"></i> Análisis
+                                            global</h3>
+
+                                        <div id="analysisContent" class="analysis-bars">
+                                            <!-- Energía -->
+                                            <div class="analysis-bar-group">
+                                                <div class="analysis-bar-header">
+                                                    <span class="analysis-bar-label"
+                                                        style="color: #F59E0B;">Energía</span>
+                                                    <span class="analysis-bar-values">
+                                                        <strong id="analysisKcalCurrent">0</strong>
+                                                        <span class="analysis-bar-sep">/</span>
+                                                        <span id="analysisKcalTarget">0</span> kcal
+                                                    </span>
+                                                </div>
+                                                <div class="analysis-bar-track">
+                                                    <div class="analysis-bar-fill" id="analysisKcalBar"
+                                                        style="background: #F59E0B; width: 0%;"></div>
+                                                </div>
+                                                <span class="analysis-bar-percent" id="analysisKcalPercent">0%</span>
+                                            </div>
+
+                                            <!-- Grasas -->
+                                            <div class="analysis-bar-group">
+                                                <div class="analysis-bar-header">
+                                                    <span class="analysis-bar-label"
+                                                        style="color: #FACC15;">Grasas</span>
+                                                    <span class="analysis-bar-values">
+                                                        <strong id="analysisGrasasCurrent">0</strong>
+                                                        <span class="analysis-bar-sep">/</span>
+                                                        <span id="analysisGrasasTarget">0</span> g
+                                                    </span>
+                                                </div>
+                                                <div class="analysis-bar-track">
+                                                    <div class="analysis-bar-fill" id="analysisGrasasBar"
+                                                        style="background: #FACC15; width: 0%;"></div>
+                                                </div>
+                                                <span class="analysis-bar-percent" id="analysisGrasasPercent">0%</span>
+                                            </div>
+
+                                            <!-- Hidratos -->
+                                            <div class="analysis-bar-group">
+                                                <div class="analysis-bar-header">
+                                                    <span class="analysis-bar-label" style="color: #EF4444;">H.
+                                                        Carbono</span>
+                                                    <span class="analysis-bar-values">
+                                                        <strong id="analysisHidratosCurrent">0</strong>
+                                                        <span class="analysis-bar-sep">/</span>
+                                                        <span id="analysisHidratosTarget">0</span> g
+                                                    </span>
+                                                </div>
+                                                <div class="analysis-bar-track">
+                                                    <div class="analysis-bar-fill" id="analysisHidratosBar"
+                                                        style="background: #EF4444; width: 0%;"></div>
+                                                </div>
+                                                <span class="analysis-bar-percent"
+                                                    id="analysisHidratosPercent">0%</span>
+                                            </div>
+
+                                            <!-- Proteínas -->
+                                            <div class="analysis-bar-group">
+                                                <div class="analysis-bar-header">
+                                                    <span class="analysis-bar-label"
+                                                        style="color: #3B82F6;">Proteína</span>
+                                                    <span class="analysis-bar-values">
+                                                        <strong id="analysisProteinasCurrent">0</strong>
+                                                        <span class="analysis-bar-sep">/</span>
+                                                        <span id="analysisProteinasTarget">0</span> g
+                                                    </span>
+                                                </div>
+                                                <div class="analysis-bar-track">
+                                                    <div class="analysis-bar-fill" id="analysisProteinasBar"
+                                                        style="background: #3B82F6; width: 0%;"></div>
+                                                </div>
+                                                <span class="analysis-bar-percent"
+                                                    id="analysisProteinasPercent">0%</span>
+                                            </div>
+
+                                            <!-- Fibra -->
+                                            <div class="analysis-bar-group">
+                                                <div class="analysis-bar-header">
+                                                    <span class="analysis-bar-label" style="color: #10B981;">Fibra
+                                                        alimentaria</span>
+                                                    <span class="analysis-bar-values">
+                                                        <strong id="analysisFibraCurrent">0</strong>
+                                                        <span class="analysis-bar-sep">/</span>
+                                                        <span id="analysisFibraTarget">0</span> g
+                                                    </span>
+                                                </div>
+                                                <div class="analysis-bar-track">
+                                                    <div class="analysis-bar-fill" id="analysisFibraBar"
+                                                        style="background: #10B981; width: 0%;"></div>
+                                                </div>
+                                                <span class="analysis-bar-percent" id="analysisFibraPercent">0%</span>
+                                            </div>
+                                        </div>
+
+                                        <div id="analysisNoPlanning" class="analysis-empty" style="display: none;">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                            <p>Sin planificación</p>
+                                            <small>Guarda los datos de la pestaña "Planificación" para ver el análisis
+                                                comparativo.</small>
+                                        </div>
+
+                                        <!-- Macro distribution pie chart -->
+                                        <div class="analysis-chart-section" id="analysisChartSection">
+                                            <h4 class="analysis-chart-title"><i class="fa-solid fa-chart-pie"></i>
+                                                Distribución de macros</h4>
+                                            <div class="analysis-chart-container">
+                                                <canvas id="macrosPieChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div id="tab-recommendations" class="tab-content">
@@ -580,9 +677,192 @@
                                 <!-- Hidden textarea removed as we use div now -->
                             </div>
                         </div>
+                        <!-- Seguimiento: Calendario -->
                         <div id="tab-followup" class="tab-content">
                             <div class="card">
-                                <h3>Seguimiento</h3>
+                                <div class="calendar-header">
+                                    <button class="btn btn-secondary btn-sm" id="calPrevMonth">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </button>
+                                    <h3 id="calMonthTitle" class="calendar-month-title">Enero 2026</h3>
+                                    <button class="btn btn-secondary btn-sm" id="calNextMonth">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div class="calendar-weekdays">
+                                    <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+                                </div>
+                                <div class="calendar-grid" id="calendarGrid">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ajustar seguimiento: Config -->
+                        <div id="tab-followup-config" class="tab-content">
+                            <div class="card">
+                                <div class="card-header-flex">
+                                    <h3>Ajustar seguimiento</h3>
+                                    <button class="btn btn-primary btn-sm" id="saveSeguimientoConfigBtn">
+                                        <i class="fa-solid fa-floppy-disk"></i> Guardar configuración
+                                    </button>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                                    Configura las medidas que el cliente deberá rellenar cada día en la pestaña de
+                                    Seguimiento.
+                                </p>
+
+                                <div id="seguimientoConfigList" class="seguimiento-config-list">
+                                    <!-- Populated dynamically -->
+                                </div>
+
+                                <button class="add-plato-btn mt-small" id="addSeguimientoMedidaBtn">
+                                    <i class="fa-solid fa-plus"></i> Añadir nueva medida
+                                </button>
+                            </div>
+                        </div>
+                        <div id="tab-revisiones" class="tab-content">
+                            <div class="view-header" style="margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <h3 style="margin: 0;">Revisiones</h3>
+                                    <button class="btn btn-secondary btn-sm" id="toggleRevisionSort">
+                                        <i class="fa-solid fa-arrow-down-short-wide"></i> Más recientes
+                                    </button>
+                                </div>
+                                <button class="btn btn-primary" id="addRevisionBtn">
+                                    <i class="fa-solid fa-plus"></i> Nueva Revisión
+                                </button>
+                            </div>
+                            <div id="revisionesList">
+                                <div class="card empty-state">
+                                    <div class="empty-icon"><i class="fa-regular fa-clipboard"></i></div>
+                                    <p>No hay revisiones registradas</p>
+                                    <small>Crea la primera revisión para este cliente</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foods View -->
+                <div id="foods-view" class="view">
+                    <div class="view-header">
+                        <div class="header-left">
+                            <div class="search-bar" style="width: 400px;">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" placeholder="Buscar alimento..." id="foodSearch">
+                            </div>
+                        </div>
+                        <div class="header-right" style="display: flex; gap: 1rem; align-items: center;">
+                            <select id="foodSortSelect" class="form-select-sm">
+                                <option value="nombre">Ordenar por nombre</option>
+                                <option value="energia_kcal">Ordenar por energía</option>
+                                <option value="proteinas">Ordenar por proteína</option>
+                                <option value="hidratos">Ordenar por H. Carbono</option>
+                                <option value="grasas">Ordenar por grasa</option>
+                            </select>
+                            <button class="btn btn-primary" id="addFoodBtn"><i class="fa-solid fa-plus"></i> Agregar
+                                nuevo alimento</button>
+                        </div>
+                    </div>
+
+                    <div class="foods-list-container" id="foodsList">
+                        <!-- Foods will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Equivalences View - Main List -->
+                <div id="equivalences-view" class="view">
+                    <div class="view-header">
+                        <div class="header-left">
+                            <div class="search-bar" style="width: 400px;">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" placeholder="Buscar lista de equivalentes..." id="equivSearch">
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <button class="btn btn-primary" id="createEquivBtn"><i class="fa-solid fa-plus"></i>
+                                Crear</button>
+                        </div>
+                    </div>
+
+                    <div class="equiv-list-container" id="equivList">
+                        <!-- Equivalence lists will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Equivalence Detail View -->
+                <div id="equiv-detail-view" class="view">
+                    <div class="view-header">
+                        <button class="btn-back" id="backToEquivList"><i class="fa-solid fa-arrow-left"></i> Volver
+                            a equivalencias</button>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" id="saveEquivBtn"><i
+                                    class="fa-solid fa-floppy-disk"></i> Guardar equivalencia</button>
+                            <button class="btn btn-danger" id="deleteEquivBtn"><i
+                                    class="fa-regular fa-trash-can"></i> Eliminar lista</button>
+                        </div>
+                    </div>
+
+                    <!-- Equiv Name -->
+                    <div class="card equiv-name-card">
+                        <div class="equiv-name-row">
+                            <span class="equiv-name-label">Nombre</span>
+                            <input type="text" id="equivNameInput" class="equiv-name-input"
+                                placeholder="Lista de equivalencias" value="Lista de equivalencias">
+                        </div>
+                    </div>
+
+                    <!-- Lista de alimentos equivalentes -->
+                    <div class="card equiv-detail-card mt-medium">
+                        <h3 id="equivDetailTitle">Lista de equivalencias</h3>
+
+                        <!-- Alimento de referencia -->
+                        <div id="equivReferenceFood" class="equiv-reference-section">
+                            <!-- Se rellena dinámicamente -->
+                            <p class="text-muted" id="equivNoReference">Añade un alimento como referencia</p>
+                        </div>
+
+                        <!-- Alimentos equivalentes -->
+                        <div id="equivFoodsList" class="equiv-foods-list">
+                            <!-- Se rellena dinámicamente -->
+                        </div>
+
+                        <!-- Buscar y añadir alimento -->
+                        <div class="equiv-add-section mt-medium">
+                            <div class="equiv-add-header">
+                                <span>Añadir nuevo alimento equivalente</span>
+                                <button class="icon-btn" id="toggleEquivSearch"><i
+                                        class="fa-solid fa-xmark"></i></button>
+                            </div>
+
+                            <div class="equiv-search-area" id="equivSearchArea">
+                                <div class="equiv-search-controls">
+                                    <div class="search-bar" style="flex: 1;">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        <input type="text" placeholder="Buscar alimento..." id="equivFoodSearch">
+                                    </div>
+                                    <select id="equivFoodSort" class="form-select-sm">
+                                        <option value="nombre">Ordenar por nombre</option>
+                                        <option value="energia_kcal">Ordenar por energía</option>
+                                        <option value="proteinas">Ordenar por proteína</option>
+                                    </select>
+                                </div>
+
+                                <!-- Table header -->
+                                <div class="equiv-food-table-header">
+                                    <span class="col-info-nutricional">Información Nutricional</span>
+                                    <span class="col-nutrient">Energía</span>
+                                    <span class="col-nutrient">Grasa</span>
+                                    <span class="col-nutrient">H. Car...</span>
+                                    <span class="col-nutrient">Proteí...</span>
+                                    <span class="col-action"></span>
+                                </div>
+
+                                <!-- Food results -->
+                                <div id="equivFoodResults" class="equiv-food-results">
+                                    <!-- Se rellena dinámicamente -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1132,8 +1412,208 @@
         </div>
     </div>
 
+    <!-- Modal Registro Diario Seguimiento -->
+    <div class="modal-overlay" id="registroDiarioModal">
+        <div class="modal" style="width: 500px;">
+            <div class="modal-header">
+                <h3 id="registroDiarioTitle">Registro del día</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="registroDiarioForm">
+                    <div id="registroDiarioFields">
+                        <!-- Populated dynamically with selects -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar registro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Añadir Medida de Seguimiento -->
+    <div class="modal-overlay" id="addMedidaModal">
+        <div class="modal" style="width: 500px;">
+            <div class="modal-header">
+                <h3>Añadir medida de seguimiento</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addMedidaForm">
+                    <div class="form-group">
+                        <label>Nombre de la medida</label>
+                        <input type="text" id="medidaNombre" required placeholder="Ej: Adherencia, Estrés...">
+                    </div>
+                    <div class="form-group">
+                        <label>Opciones del desplegable <small class="text-muted">(separadas por coma)</small></label>
+                        <input type="text" id="medidaOpciones" required
+                            placeholder="Ej: Total, Media, Ninguna">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Añadir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Revisión -->
+    <div class="modal-overlay" id="addRevisionModal">
+        <div class="modal" style="width: 600px;">
+            <div class="modal-header">
+                <h3>Nueva Revisión</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addRevisionForm">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" name="fecha" id="revisionFecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenido</label>
+                        <textarea name="contenido" id="revisionContenido" rows="8"
+                            placeholder="Escribe los comentarios de la revisión..."
+                            style="font-family: 'Inter', sans-serif;"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Revisión</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Añadir Comida al Plan -->
+    <div class="modal-overlay" id="addMealModal">
+        <div class="modal" style="width: 450px;">
+            <div class="modal-header">
+                <h3>Añadir comida</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addMealForm">
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Hora</label>
+                            <input type="time" name="hora" id="mealHora" value="12:00" required>
+                        </div>
+                        <div class="form-group half">
+                            <label>Nombre</label>
+                            <select name="nombre" id="mealNombre" class="form-select-sm" style="width:100%; padding: 0.6rem;">
+                                <option value="Desayuno">Desayuno</option>
+                                <option value="Media mañana">Media mañana</option>
+                                <option value="Comida" selected>Comida</option>
+                                <option value="Merienda">Merienda</option>
+                                <option value="Cena">Cena</option>
+                                <option value="Recena">Recena</option>
+                                <option value="Pre-entreno">Pre-entreno</option>
+                                <option value="Post-entreno">Post-entreno</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Añadir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Buscar Alimento/Equivalencia para Plan -->
+    <div class="modal-overlay" id="planFoodSearchModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h3>Añadir alimento al plato</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 1rem 1.5rem;">
+                <!-- Tabs: Alimentos / Equivalencias -->
+                <div class="tabs-small" style="margin-bottom: 1rem;">
+                    <div class="tab active" data-plan-search-tab="foods">Alimentos</div>
+                    <div class="tab" data-plan-search-tab="equivs">Equivalencias</div>
+                </div>
+
+                <div class="search-bar" style="width: 100%; margin-bottom: 1rem;">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Buscar..." id="planFoodSearchInput">
+                </div>
+
+                <!-- Results: Alimentos -->
+                <div id="planFoodSearchResults" class="plan-search-results">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Results: Equivalencias -->
+                <div id="planEquivSearchResults" class="plan-search-results" style="display: none;">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Añadir/Editar Alimento -->
+    <div class="modal-overlay" id="addFoodModal">
+        <div class="modal" style="width: 600px;">
+            <div class="modal-header">
+                <h3 id="foodModalTitle">Agregar nuevo alimento</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addFoodForm">
+                    <input type="hidden" id="editFoodId" value="">
+                    <div class="form-group">
+                        <label>Nombre del alimento</label>
+                        <input type="text" name="nombre" id="foodNombre" required placeholder="Ej: Pechuga de pollo">
+                    </div>
+                    <div class="form-group">
+                        <label>Fuente</label>
+                        <input type="text" name="fuente" id="foodFuente" placeholder="Ej: Base de datos local"
+                            value="Base de datos local">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Energía (kcal)</label>
+                            <input type="number" name="energia_kcal" id="foodKcal" step="0.1" min="0" required
+                                placeholder="0">
+                        </div>
+                        <div class="form-group half">
+                            <label>Grasas (g)</label>
+                            <input type="number" name="grasas" id="foodGrasas" step="0.1" min="0" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>H. Carbono (g)</label>
+                            <input type="number" name="hidratos" id="foodHidratos" step="0.1" min="0" placeholder="0">
+                        </div>
+                        <div class="form-group half">
+                            <label>Proteína (g)</label>
+                            <input type="number" name="proteinas" id="foodProteinas" step="0.1" min="0" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Fibra (g)</label>
+                        <input type="number" name="fibra" id="foodFibra" step="0.1" min="0" placeholder="0">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="foodSubmitBtn">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
     <input type="file" id="photoUploadInput" accept="image/*" style="display: none;">
 </body>
