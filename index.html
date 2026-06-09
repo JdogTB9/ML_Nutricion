@@ -3215,7 +3215,7 @@ body {
         font-size: .85rem; color: var(--text-secondary); cursor: pointer; text-align: left;
     }
     .login-remember input[type="checkbox"] { width: auto; margin: 0; }
-    .login-btn { width: 100%; padding: 12px; font-size: 1rem; margin-top: 4px; }
+    .login-btn { width: 100%; padding: 12px; font-size: 1rem; margin-top: 4px; justify-content: center; }
 </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3298,7 +3298,7 @@ body {
                     <div class="user-profile">
                         <img src="avatar.png" alt="Profile" class="avatar-small">
                         <div class="user-info">
-                            <span class="name">Mario Llanos</span>
+                            <span class="name" id="topbarUserName"></span>
                             <span class="role">Nutricionista</span>
                         </div>
                         <i class="fa-solid fa-chevron-down"></i>
@@ -4111,6 +4111,14 @@ body {
                     <div class="card" style="max-width:480px;">
                         <h3 style="margin-bottom:4px;">Mi cuenta</h3>
                         <p id="configUserEmail" style="color:var(--text-muted);font-size:.9rem;margin:4px 0 24px;"></p>
+
+                        <h4 style="margin-bottom:12px;font-size:.95rem;">Nombre visible</h4>
+                        <div class="login-field" style="margin-bottom:12px;">
+                            <label>Nombre que aparece en el dashboard</label>
+                            <input type="text" id="configDisplayName" placeholder="Tu nombre">
+                        </div>
+                        <div id="displayNameMsg" style="display:none;margin-bottom:12px;font-size:.85rem;border-radius:8px;padding:8px 12px;border:1px solid transparent;"></div>
+                        <button id="saveDisplayNameBtn" class="btn btn-primary" style="margin-bottom:24px;">Guardar nombre</button>
 
                         <h4 style="margin-bottom:12px;font-size:.95rem;">Cambiar contraseña</h4>
                         <div class="login-field" style="margin-bottom:12px;">
@@ -4941,8 +4949,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('pageTitle').textContent = getGreeting() + ', ' + currentUser.name;
 
+        const topbarName = document.getElementById('topbarUserName');
+        if (topbarName) topbarName.textContent = currentUser.name;
+
         const emailEl = document.getElementById('configUserEmail');
         if (emailEl) emailEl.textContent = currentUser.email;
+
+        const nameInput = document.getElementById('configDisplayName');
+        if (nameInput) nameInput.value = currentUser.name;
 
         fetchClients().then(() => loadDashboard());
     }
@@ -5009,6 +5023,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('loginPassword').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
+
+    // Guardar nombre visible
+    document.getElementById('saveDisplayNameBtn').addEventListener('click', async () => {
+        const newName = document.getElementById('configDisplayName').value.trim();
+        const msg = document.getElementById('displayNameMsg');
+
+        if (!newName) {
+            msg.textContent = 'El nombre no puede estar vacío.';
+            msg.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#b91c1c;border-radius:8px;padding:8px 12px;font-size:.85rem;border:1px solid;margin-bottom:12px;';
+            return;
+        }
+
+        const { error } = await supabaseClient.auth.updateUser({ data: { name: newName } });
+
+        if (error) {
+            msg.textContent = 'Error: ' + error.message;
+            msg.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#b91c1c;border-radius:8px;padding:8px 12px;font-size:.85rem;border:1px solid;margin-bottom:12px;';
+            return;
+        }
+
+        currentUser.name = newName;
+        const topbarName = document.getElementById('topbarUserName');
+        if (topbarName) topbarName.textContent = newName;
+        document.getElementById('pageTitle').textContent = getGreeting() + ', ' + newName;
+
+        msg.textContent = 'Nombre actualizado correctamente.';
+        msg.style.cssText = 'display:block;background:#d1fae5;border-color:#6ee7b7;color:#065f46;border-radius:8px;padding:8px 12px;font-size:.85rem;border:1px solid;margin-bottom:12px;';
     });
 
     // Cambio de contraseña
@@ -5408,8 +5450,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (targetId === 'configuracion') {
                 document.getElementById('configuracion-view').classList.add('active');
                 pageTitle.textContent = 'Configuración';
-                const emailEl = document.getElementById('configUserEmail');
-                if (emailEl && currentUser) emailEl.textContent = currentUser.email;
+                if (currentUser) {
+                    const emailEl = document.getElementById('configUserEmail');
+                    if (emailEl) emailEl.textContent = currentUser.email;
+                    const nameInput = document.getElementById('configDisplayName');
+                    if (nameInput) nameInput.value = currentUser.name;
+                }
+                document.getElementById('displayNameMsg').style.display = 'none';
                 document.getElementById('passwordMsg').style.display = 'none';
                 document.getElementById('newPassword').value = '';
                 document.getElementById('confirmPassword').value = '';
