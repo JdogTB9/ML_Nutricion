@@ -3177,6 +3177,45 @@ body {
         position: static;
     }
 }
+
+    /* ==========================================
+       LOGIN SCREEN
+    ========================================== */
+    #loginScreen {
+        position: fixed; inset: 0;
+        background: #f0f4f3;
+        display: flex; align-items: center; justify-content: center;
+        z-index: 99999;
+    }
+    .login-card {
+        background: #fff; border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.12);
+        padding: 48px 40px; width: 380px; max-width: 95vw;
+        display: flex; flex-direction: column; gap: 16px;
+        text-align: center;
+    }
+    .login-logo { width: 80px; margin: 0 auto 8px; display: block; }
+    .login-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .login-subtitle { font-size: .9rem; color: var(--text-muted); margin: 0 0 8px; }
+    .login-error {
+        background: #fee2e2; border: 1px solid #fca5a5;
+        color: #b91c1c; border-radius: 8px; padding: 10px 14px;
+        font-size: .85rem; text-align: left;
+    }
+    .login-field { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+    .login-field label { font-size: .82rem; font-weight: 600; color: var(--text-secondary); }
+    .login-field input {
+        border: 1.5px solid var(--border-color); border-radius: 8px;
+        padding: 10px 14px; font-size: .95rem; outline: none;
+        transition: border-color .2s; width: 100%; box-sizing: border-box;
+    }
+    .login-field input:focus { border-color: var(--primary); }
+    .login-remember {
+        display: flex; align-items: center; gap: 8px;
+        font-size: .85rem; color: var(--text-secondary); cursor: pointer; text-align: left;
+    }
+    .login-remember input[type="checkbox"] { width: auto; margin: 0; }
+    .login-btn { width: 100%; padding: 12px; font-size: 1rem; margin-top: 4px; }
 </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3186,7 +3225,31 @@ body {
 </head>
 
 <body>
-    <div class="app-container">
+    <!-- Pantalla de login — visible hasta autenticación exitosa -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <img src="Logo_ML_Sin_Fondo.png" alt="ML Nutrición" class="login-logo">
+            <h1 class="login-title">ML Nutrición</h1>
+            <p class="login-subtitle">Accede con tus credenciales</p>
+            <div id="loginError" class="login-error" style="display:none"></div>
+            <div class="login-field">
+                <label for="loginEmail">Correo electrónico</label>
+                <input type="email" id="loginEmail" autocomplete="email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="login-field">
+                <label for="loginPassword">Contraseña</label>
+                <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••">
+            </div>
+            <label class="login-remember">
+                <input type="checkbox" id="loginRemember" checked>
+                <span>Recordarme</span>
+            </label>
+            <button id="loginBtn" class="btn btn-primary login-btn">Iniciar sesión</button>
+        </div>
+    </div>
+
+    <!-- App principal — oculto hasta autenticación -->
+    <div id="appWrapper" class="app-container" style="display:none">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
@@ -3216,7 +3279,7 @@ body {
             </nav>
 
             <div class="sidebar-footer">
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="configuracion">
                     <i class="fa-solid fa-gear"></i>
                     <span>Configuración</span>
                 </a>
@@ -4043,6 +4106,33 @@ body {
                     </div>
                 </div>
 
+                <!-- Configuración View -->
+                <div id="configuracion-view" class="view">
+                    <div class="card" style="max-width:480px;">
+                        <h3 style="margin-bottom:4px;">Mi cuenta</h3>
+                        <p id="configUserEmail" style="color:var(--text-muted);font-size:.9rem;margin:4px 0 24px;"></p>
+
+                        <h4 style="margin-bottom:12px;font-size:.95rem;">Cambiar contraseña</h4>
+                        <div class="login-field" style="margin-bottom:12px;">
+                            <label>Nueva contraseña</label>
+                            <input type="password" id="newPassword" placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <div class="login-field" style="margin-bottom:16px;">
+                            <label>Confirmar nueva contraseña</label>
+                            <input type="password" id="confirmPassword" placeholder="Repite la contraseña">
+                        </div>
+                        <div id="passwordMsg" style="display:none;margin-bottom:12px;font-size:.85rem;border-radius:8px;padding:8px 12px;border:1px solid transparent;"></div>
+                        <button id="changePasswordBtn" class="btn btn-primary">Guardar nueva contraseña</button>
+                    </div>
+
+                    <div class="card" style="max-width:480px;margin-top:16px;">
+                        <h4 style="margin-bottom:12px;font-size:.95rem;">Sesión</h4>
+                        <button id="logoutBtn" class="btn btn-secondary">
+                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -4824,6 +4914,147 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // ==========================================
+    // AUTENTICACIÓN
+    // ==========================================
+
+    let currentUser = null; // { email, name }
+
+    function getGreeting() {
+        const h = new Date().getHours();
+        return h < 13 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+    }
+
+    function showLoginScreen() {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('appWrapper').style.display = 'none';
+    }
+
+    function showApp(session) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appWrapper').style.display = '';
+
+        const meta = session.user.user_metadata || {};
+        const rawName = meta.name || session.user.email.split('@')[0];
+        const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+        currentUser = { email: session.user.email, name };
+
+        document.getElementById('pageTitle').textContent = getGreeting() + ', ' + currentUser.name;
+
+        const emailEl = document.getElementById('configUserEmail');
+        if (emailEl) emailEl.textContent = currentUser.email;
+
+        fetchClients().then(() => loadDashboard());
+    }
+
+    async function initAuth() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+
+        if (session) {
+            const noRemember = localStorage.getItem('ml_no_remember') === '1';
+            const sessionActive = sessionStorage.getItem('ml_session_active') === '1';
+
+            if (noRemember && !sessionActive) {
+                await supabaseClient.auth.signOut();
+                localStorage.removeItem('ml_no_remember');
+                showLoginScreen();
+            } else {
+                showApp(session);
+            }
+        } else {
+            showLoginScreen();
+        }
+    }
+
+    // Login
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const remember = document.getElementById('loginRemember').checked;
+        const errEl = document.getElementById('loginError');
+
+        if (!email || !password) {
+            errEl.textContent = 'Introduce correo y contraseña.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        const btn = document.getElementById('loginBtn');
+        btn.textContent = 'Entrando...';
+        btn.disabled = true;
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        btn.textContent = 'Iniciar sesión';
+        btn.disabled = false;
+
+        if (error) {
+            errEl.textContent = 'Correo o contraseña incorrectos.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        errEl.style.display = 'none';
+
+        if (remember) {
+            localStorage.removeItem('ml_no_remember');
+            sessionStorage.removeItem('ml_session_active');
+        } else {
+            localStorage.setItem('ml_no_remember', '1');
+            sessionStorage.setItem('ml_session_active', '1');
+        }
+
+        showApp(data.session);
+    });
+
+    document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
+
+    // Cambio de contraseña
+    document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+        const np = document.getElementById('newPassword').value;
+        const cp = document.getElementById('confirmPassword').value;
+        const msg = document.getElementById('passwordMsg');
+
+        if (np.length < 6) {
+            msg.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+            msg.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#b91c1c;border-radius:8px;padding:8px 12px;font-size:.85rem;border:1px solid;margin-bottom:12px;';
+            return;
+        }
+        if (np !== cp) {
+            msg.textContent = 'Las contraseñas no coinciden.';
+            msg.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#b91c1c;border-radius:8px;padding:8px 12px;font-size:.85rem;border:1px solid;margin-bottom:12px;';
+            return;
+        }
+
+        const { error } = await supabaseClient.auth.updateUser({ password: np });
+
+        if (error) {
+            msg.textContent = 'Error: ' + error.message;
+            msg.style.cssText = 'display:block;background:#fee2e2;border-color:#fca5a5;color:#b91c1c;border-radius:8px;padding:8px 12px;font-size:.85rem;border:1px solid;margin-bottom:12px;';
+            return;
+        }
+
+        msg.textContent = 'Contraseña actualizada correctamente.';
+        msg.style.cssText = 'display:block;background:#d1fae5;border-color:#6ee7b7;color:#065f46;border-radius:8px;padding:8px 12px;font-size:.85rem;border:1px solid;margin-bottom:12px;';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        localStorage.removeItem('ml_no_remember');
+        sessionStorage.removeItem('ml_session_active');
+        currentUser = null;
+        showLoginScreen();
+    });
+
+    // ==========================================
+    // ESTADO LOCAL
+    // ==========================================
+
     // Estado local de clientes (se llenará desde Supabase)
     let clients = [];
     let currentClientId = null;
@@ -5159,7 +5390,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Handle specific views
             if (targetId === 'dashboard') {
                 document.getElementById('dashboard-view').classList.add('active');
-                pageTitle.textContent = 'Buenas tardes, Mario';
+                pageTitle.textContent = currentUser ? getGreeting() + ', ' + currentUser.name : 'Dashboard';
                 loadDashboard();
             } else if (targetId === 'clients') {
                 document.getElementById('clients-view').classList.add('active');
@@ -5174,11 +5405,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 pageTitle.textContent = 'Equivalencias';
                 ensureFoodsLoaded();
                 fetchEquivalences();
-            } else {
-                alert('Esta sección estará disponible próximamente.');
-                item.classList.remove('active');
-                document.querySelector('.nav-item[data-target="dashboard"]').classList.add('active');
-                document.getElementById('dashboard-view').classList.add('active');
+            } else if (targetId === 'configuracion') {
+                document.getElementById('configuracion-view').classList.add('active');
+                pageTitle.textContent = 'Configuración';
+                const emailEl = document.getElementById('configUserEmail');
+                if (emailEl && currentUser) emailEl.textContent = currentUser.email;
+                document.getElementById('passwordMsg').style.display = 'none';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
             }
         });
     });
@@ -9368,8 +9602,8 @@ document.addEventListener('DOMContentLoaded', () => {
         generatePdfBtn.addEventListener('click', generateClientPDF);
     }
 
-    // Cargar clientes al iniciar la app, luego dashboard
-    fetchClients().then(() => loadDashboard());
+    // Iniciar app con verificación de sesión
+    initAuth();
 });
 
 </script>
