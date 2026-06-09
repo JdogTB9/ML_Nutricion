@@ -9453,6 +9453,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Recommendations (use live editor content, fallback to DB)
         const editorEl = document.getElementById('recommendationsEditor');
         const recsHtml = (editorEl && editorEl.innerHTML.trim()) ? editorEl.innerHTML : (planData?.recomendaciones || '');
+        const cleanRecsHtml = recsHtml.replace(/<p>\s*<strong>\s*RECOMENDACIONES\s*<\/strong>\s*<\/p>\s*/i, '');
 
         const fileName = `PLAN NUTRICIONAL ${mesActual} ${anioActual} ${client.name.toUpperCase()} ${client.surname.toUpperCase()}.pdf`;
 
@@ -9466,8 +9467,8 @@ document.addEventListener('DOMContentLoaded', () => {
             /* HEADER */
             .pdf-header { background: #38C7A5; color: white; padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; }
             .pdf-logo-area { display: flex; align-items: center; gap: 16px; }
-            .pdf-logo-area img { height: 52px; width: auto; }
-            .pdf-brand-name { font-size: 22px; font-weight: 700; }
+            .pdf-logo-circle { width: 64px; height: 64px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+            .pdf-logo-circle img { width: 50px; height: 50px; object-fit: contain; }
             .pdf-brand-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
             .pdf-contact { text-align: right; font-size: 12px; line-height: 1.8; opacity: 0.95; }
             .pdf-contact strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
@@ -9485,7 +9486,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .pdf-client-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
             .pdf-stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; }
             .pdf-stat-label { font-size: 9px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-            .pdf-stat-value { font-size: 15px; font-weight: 700; color: #1f2937; margin-top: 2px; }
+            .pdf-stat-value { font-size: 12px; font-weight: 700; color: #1f2937; margin-top: 2px; }
             .pdf-stat-hl { background: #f0fdf9; border-color: #38C7A5; }
             .pdf-stat-hl .pdf-stat-value { color: #38C7A5; }
 
@@ -9528,10 +9529,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <!-- HEADER -->
             <div class="pdf-header">
                 <div class="pdf-logo-area">
-                    <img src="Logo_ML_Sin_Fondo.png" alt="" onerror="this.style.display='none'">
+                    <div class="pdf-logo-circle">
+                        <img src="Logo_ML_Sin_Fondo.png" alt="" onerror="this.style.display='none'">
+                    </div>
                     <div>
-                        <div class="pdf-brand-name">ML Nutricion</div>
-                        <div class="pdf-brand-sub">Nutricion personalizada y salud</div>
+                        <div class="pdf-brand-sub" style="font-size:13px;font-weight:600;opacity:1;">Nutrición personalizada y salud</div>
                     </div>
                 </div>
                 <div class="pdf-contact">
@@ -9558,7 +9560,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="pdf-stat">
                         <div class="pdf-stat-label">Edad</div>
-                        <div class="pdf-stat-value">${client.age} anos</div>
+                        <div class="pdf-stat-value">${client.age} años</div>
                     </div>
                     <div class="pdf-stat">
                         <div class="pdf-stat-label">Email</div>
@@ -9579,20 +9581,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
 
-            ${macrosHtml ? `
-            <!-- MACROS -->
-            <div class="pdf-section" style="padding-top:0">
-                <div class="pdf-section-title">Objetivos nutricionales</div>
-                ${macrosHtml.replace(/class="macros-grid"/g,'class="pdf-macros"')
-                    .replace(/class="macro-card energy"/g,'class="pdf-macro pdf-macro-energy"')
-                    .replace(/class="macro-card protein"/g,'class="pdf-macro pdf-macro-protein"')
-                    .replace(/class="macro-card carbs"/g,'class="pdf-macro pdf-macro-carbs"')
-                    .replace(/class="macro-card fat"/g,'class="pdf-macro pdf-macro-fat"')
-                    .replace(/class="macro-card fiber"/g,'class="pdf-macro pdf-macro-fiber"')
-                    .replace(/class="macro-icon"/g,'class="pdf-macro-icon"')
-                    .replace(/class="macro-val"/g,'class="pdf-macro-val"')
-                    .replace(/class="macro-lbl"/g,'class="pdf-macro-lbl"')}
-            </div>` : ''}
 
             <!-- COMIDAS -->
             <div class="pdf-section" style="padding-top:0">
@@ -9609,11 +9597,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     || '<p style="color:#9ca3af;font-style:italic;">No hay comidas en el plan.</p>'}
             </div>
 
-            ${recsHtml ? `
+            ${cleanRecsHtml ? `
             <!-- RECOMENDACIONES -->
             <div class="pdf-section" style="padding-top:0">
                 <div class="pdf-section-title">Recomendaciones</div>
-                <div class="pdf-recs">${recsHtml}</div>
+                <div class="pdf-recs">${cleanRecsHtml}</div>
             </div>` : ''}
 
             <!-- FOOTER -->
