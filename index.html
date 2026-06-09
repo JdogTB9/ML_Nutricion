@@ -9466,9 +9466,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             /* HEADER */
             .pdf-header { background: #38C7A5; color: white; padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; }
-            .pdf-logo-area { display: flex; align-items: center; gap: 16px; }
-            .pdf-logo-circle { width: 64px; height: 64px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-            .pdf-logo-circle img { width: 50px; height: 50px; object-fit: contain; }
+            .pdf-logo-area { display: flex; flex-direction: column; align-items: center; margin-left: 24px; gap: 8px; }
+            .pdf-logo-circle { width: 90px; height: 90px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+            .pdf-logo-circle img { width: 72px; height: 72px; object-fit: contain; }
             .pdf-brand-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
             .pdf-contact { text-align: right; font-size: 12px; line-height: 1.8; opacity: 0.95; }
             .pdf-contact strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
@@ -9480,13 +9480,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             /* SECTION */
             .pdf-section { padding: 22px 36px; }
-            .pdf-section-title { font-size: 10px; font-weight: 700; color: #38C7A5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+            .pdf-section-title { font-size: 15px; font-weight: 700; color: #38C7A5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; border-bottom: 2px solid #38C7A5; padding-bottom: 6px; }
 
             /* CLIENT GRID */
             .pdf-client-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-            .pdf-stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; }
-            .pdf-stat-label { font-size: 9px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-            .pdf-stat-value { font-size: 12px; font-weight: 700; color: #1f2937; margin-top: 2px; }
+            .pdf-stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px 10px; }
+            .pdf-stat-label { font-size: 8px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+            .pdf-stat-value { font-size: 9px; font-weight: 700; color: #1f2937; margin-top: 1px; }
             .pdf-stat-hl { background: #f0fdf9; border-color: #38C7A5; }
             .pdf-stat-hl .pdf-stat-value { color: #38C7A5; }
 
@@ -9517,6 +9517,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             /* RECS */
             .pdf-recs { font-size: 12px; line-height: 1.7; color: #374151; }
+            .pdf-recs * { font-size: 12px !important; font-family: Arial, Helvetica, sans-serif !important; line-height: 1.7; }
+            .pdf-recs h1, .pdf-recs h2, .pdf-recs h3, .pdf-recs h4, .pdf-recs h5, .pdf-recs h6 { font-weight: 700; margin-bottom: 4px; }
             .pdf-recs p { margin-bottom: 6px; }
 
             /* FOOTER */
@@ -9532,9 +9534,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="pdf-logo-circle">
                         <img src="Logo_ML_Sin_Fondo.png" alt="" onerror="this.style.display='none'">
                     </div>
-                    <div>
-                        <div class="pdf-brand-sub" style="font-size:13px;font-weight:600;opacity:1;">Nutrición personalizada y salud</div>
-                    </div>
+                    <div style="font-size:12px;font-weight:600;color:white;opacity:1;text-align:center;">Nutrición personalizada y salud</div>
                 </div>
                 <div class="pdf-contact">
                     <strong>Mario Llanos</strong>
@@ -9564,7 +9564,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="pdf-stat">
                         <div class="pdf-stat-label">Email</div>
-                        <div class="pdf-stat-value" style="font-size:11px">${client.email || '—'}</div>
+                        <div class="pdf-stat-value" style="font-size:9px">${client.email || '—'}</div>
                     </div>
                     <div class="pdf-stat">
                         <div class="pdf-stat-label">Peso</div>
@@ -9613,17 +9613,21 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>`;
 
-        // Wrap con ancho explícito en píxeles — html2pdf inyecta este string al body,
-        // lo captura con html2canvas en coordenadas válidas y lo elimina automáticamente
-        const pdfString = `<div style="width:794px;background:#fff;margin:0;padding:0;">${pdfBodyHtml}</div>`;
+        // Mostrar previsualización editable antes de descargar
+        const previewModal = document.getElementById('pdfPreviewModal');
+        const previewInner = document.getElementById('pdfPreviewInner');
+        previewInner.innerHTML = pdfBodyHtml;
 
-        await html2pdf().set({
-            margin: 0,
-            filename: fileName,
-            image: { type: 'jpeg', quality: 0.95 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(pdfString).save();
+        const recsDiv = previewInner.querySelector('.pdf-recs');
+        if (recsDiv) {
+            recsDiv.contentEditable = 'true';
+            recsDiv.style.outline = '2px dashed #38C7A5';
+            recsDiv.style.minHeight = '40px';
+            recsDiv.title = 'Haz clic para editar';
+        }
+
+        previewModal.dataset.filename = fileName;
+        previewModal.style.display = 'block';
 
         } catch (error) {
             console.error('Error al generar PDF:', error);
@@ -9637,12 +9641,73 @@ document.addEventListener('DOMContentLoaded', () => {
         generatePdfBtn.addEventListener('click', generateClientPDF);
     }
 
+    // Modal de previsualización PDF
+    document.getElementById('pdfPreviewDownload').addEventListener('click', async () => {
+        const modal = document.getElementById('pdfPreviewModal');
+        const inner = document.getElementById('pdfPreviewInner');
+        const pdfFileName = modal.dataset.filename || 'plan_nutricional.pdf';
+
+        inner.querySelectorAll('[contenteditable]').forEach(el => {
+            el.removeAttribute('contenteditable');
+            el.style.outline = '';
+            el.style.minHeight = '';
+            el.title = '';
+        });
+
+        const btn = document.getElementById('pdfPreviewDownload');
+        btn.innerHTML = 'Generando...';
+        btn.disabled = true;
+
+        const pdfString = `<div style="width:794px;background:#fff;margin:0;padding:0;">${inner.innerHTML}</div>`;
+        try {
+            await html2pdf().set({
+                margin: [12, 0, 12, 0],
+                filename: pdfFileName,
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(pdfString).save();
+        } catch(e) {
+            alert('Error al generar PDF: ' + e.message);
+        }
+
+        btn.innerHTML = '<i class="fa-solid fa-file-arrow-down"></i> Descargar PDF';
+        btn.disabled = false;
+        modal.style.display = 'none';
+        inner.innerHTML = '';
+    });
+
+    document.getElementById('pdfPreviewClose').addEventListener('click', () => {
+        document.getElementById('pdfPreviewModal').style.display = 'none';
+        document.getElementById('pdfPreviewInner').innerHTML = '';
+    });
+
     // Iniciar app con verificación de sesión
     initAuth();
 });
 
 </script>
     <input type="file" id="photoUploadInput" accept="image/*" style="display: none;">
+
+    <!-- Modal previsualización PDF -->
+    <div id="pdfPreviewModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;overflow-y:auto;padding:24px 16px;">
+        <div style="max-width:870px;margin:0 auto;">
+            <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+                <div style="background:#1f2937;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+                    <span style="color:white;font-weight:600;font-size:.95rem;">Vista previa &middot; Puedes editar el texto de las recomendaciones antes de descargar</span>
+                    <div style="display:flex;gap:10px;flex-shrink:0;">
+                        <button id="pdfPreviewClose" class="btn btn-secondary" style="padding:8px 18px;">Cancelar</button>
+                        <button id="pdfPreviewDownload" class="btn btn-primary" style="padding:8px 18px;">
+                            <i class="fa-solid fa-file-arrow-down"></i> Descargar PDF
+                        </button>
+                    </div>
+                </div>
+                <div style="background:#6b7280;padding:24px;overflow-x:auto;">
+                    <div id="pdfPreviewInner" style="width:794px;min-height:400px;margin:0 auto;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.3);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
