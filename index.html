@@ -9173,183 +9173,195 @@ document.addEventListener('DOMContentLoaded', () => {
         const editorEl = document.getElementById('recommendationsEditor');
         const recsHtml = (editorEl && editorEl.innerHTML.trim()) ? editorEl.innerHTML : (planData?.recomendaciones || '');
 
-        // Full HTML document for PDF
-        const htmlContent = `
-        <html>
-        <head>
-        <meta charset="UTF-8">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Inter', sans-serif; color: #374151; background: #fff; font-size: 13px; line-height: 1.5; }
-
-            /* HEADER */
-            .pdf-header { background: linear-gradient(135deg, #38C7A5 0%, #2ba88b 100%); color: white; padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; }
-            .pdf-header .logo-area { display: flex; align-items: center; gap: 16px; }
-            .pdf-header img { height: 52px; width: auto; }
-            .pdf-header .brand-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-            .pdf-header .brand-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
-            .pdf-header .contact-info { text-align: right; font-size: 12px; line-height: 1.8; opacity: 0.95; }
-            .pdf-header .contact-info strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-
-            /* PLAN TITLE BANNER */
-            .plan-banner { background: #f0fdf9; border-left: 5px solid #38C7A5; padding: 14px 36px; }
-            .plan-banner .plan-month { font-size: 11px; color: #38C7A5; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-            .plan-banner .plan-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-top: 2px; }
-
-            /* CLIENT INFO */
-            .section { padding: 24px 36px; }
-            .section-title { font-size: 11px; font-weight: 700; color: #38C7A5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-            .section-title::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
-            .client-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-            .client-stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 16px; }
-            .client-stat .stat-label { font-size: 10px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-            .client-stat .stat-value { font-size: 16px; font-weight: 700; color: #1f2937; margin-top: 2px; }
-            .client-stat.highlight { background: #f0fdf9; border-color: #38C7A5; }
-            .client-stat.highlight .stat-value { color: #38C7A5; }
-
-            /* MACROS */
-            .macros-grid { display: flex; gap: 10px; flex-wrap: wrap; }
-            .macro-card { flex: 1; min-width: 80px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; text-align: center; }
-            .macro-card.energy { background: #fffbeb; border-color: #fcd34d; }
-            .macro-card.protein { background: #eff6ff; border-color: #93c5fd; }
-            .macro-card.carbs { background: #fff7ed; border-color: #fdba74; }
-            .macro-card.fat { background: #f0fdf4; border-color: #86efac; }
-            .macro-card.fiber { background: #f0fdf9; border-color: #6ee7b7; }
-            .macro-icon { font-size: 18px; margin-bottom: 4px; }
-            .macro-val { font-size: 20px; font-weight: 700; color: #1f2937; }
-            .macro-lbl { font-size: 10px; color: #6b7280; margin-top: 2px; }
-
-            /* MEALS */
-            .meal-block { margin-bottom: 20px; page-break-inside: avoid; }
-            .meal-title { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
-            .meal-time-badge { background: #38C7A5; color: white; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
-            .meal-name { font-size: 16px; font-weight: 700; color: #1f2937; }
-            .meal-items { list-style: none; padding: 0; }
-            .meal-items li { padding: 6px 0 6px 16px; border-bottom: 1px dashed #f3f4f6; position: relative; font-size: 13px; color: #374151; }
-            .meal-items li::before { content: '•'; position: absolute; left: 0; color: #38C7A5; font-weight: 700; }
-            .meal-items li:last-child { border-bottom: none; }
-            .qty { font-weight: 700; color: #38C7A5; margin-right: 4px; }
-            .equiv-item { color: #6b7280; font-style: italic; }
-            .or-sep { color: #d1d5db; font-style: normal; font-weight: 600; }
-
-            /* RECOMMENDATIONS */
-            .recs-content { font-size: 13px; line-height: 1.7; color: #374151; }
-            .recs-content p { margin-bottom: 8px; }
-            .recs-content strong { color: #1f2937; }
-
-            /* FOOTER */
-            .pdf-footer { background: #f9fafb; border-top: 2px solid #38C7A5; padding: 16px 36px; display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
-            .pdf-footer .footer-brand { font-size: 13px; font-weight: 700; color: #38C7A5; }
-            .pdf-footer .footer-contact { font-size: 11px; color: #6b7280; text-align: right; line-height: 1.6; }
-
-            /* PAGE BREAKS */
-            .section + .section { padding-top: 0; }
-        </style>
-        </head>
-        <body>
-
-        <!-- HEADER -->
-        <div class="pdf-header">
-            <div class="logo-area">
-                <img src="Logo_ML_Sin_Fondo.png" alt="ML Nutrición" onerror="this.style.display='none'">
-                <div>
-                    <div class="brand-name">ML Nutrición</div>
-                    <div class="brand-sub">Nutrición personalizada y salud</div>
-                </div>
-            </div>
-            <div class="contact-info">
-                <strong>Mario Llanos</strong>
-                📞 +34 677 876 638<br>
-                ✉️ llanosnutricion@gmail.com<br>
-                🌐 En línea
-            </div>
-        </div>
-
-        <!-- PLAN BANNER -->
-        <div class="plan-banner">
-            <div class="plan-month">${mesActual} ${anioActual}</div>
-            <div class="plan-title">Plan Nutricional · ${client.name} ${client.surname}</div>
-        </div>
-
-        <!-- CLIENT INFO -->
-        <div class="section">
-            <div class="section-title">Datos del cliente</div>
-            <div class="client-grid">
-                <div class="client-stat highlight">
-                    <div class="stat-label">Nombre</div>
-                    <div class="stat-value">${client.name} ${client.surname}</div>
-                </div>
-                <div class="client-stat">
-                    <div class="stat-label">Edad</div>
-                    <div class="stat-value">${client.age} años</div>
-                </div>
-                <div class="client-stat">
-                    <div class="stat-label">Email</div>
-                    <div class="stat-value" style="font-size:12px">${client.email || '—'}</div>
-                </div>
-                <div class="client-stat">
-                    <div class="stat-label">Peso</div>
-                    <div class="stat-value">${peso ? peso + ' kg' : '—'}</div>
-                </div>
-                <div class="client-stat">
-                    <div class="stat-label">Altura</div>
-                    <div class="stat-value">${altura ? altura + ' cm' : '—'}</div>
-                </div>
-                <div class="client-stat">
-                    <div class="stat-label">IMC</div>
-                    <div class="stat-value">${imc || '—'} kg/m²</div>
-                </div>
-            </div>
-        </div>
-
-        ${macrosHtml ? `
-        <!-- MACROS -->
-        <div class="section" style="padding-top:0">
-            <div class="section-title">Objetivos nutricionales</div>
-            ${macrosHtml}
-        </div>` : ''}
-
-        <!-- COMIDAS -->
-        <div class="section" style="padding-top:0">
-            <div class="section-title">Plan de comidas</div>
-            ${comidasHtml || '<p style="color:#9ca3af; font-style:italic;">No hay comidas en el plan.</p>'}
-        </div>
-
-        ${recsHtml ? `
-        <!-- RECOMENDACIONES -->
-        <div class="section" style="padding-top:0">
-            <div class="section-title">Recomendaciones</div>
-            <div class="recs-content">${recsHtml}</div>
-        </div>` : ''}
-
-        <!-- FOOTER -->
-        <div class="pdf-footer">
-            <div class="footer-brand">ML Nutrición</div>
-            <div class="footer-contact">
-                Mario Llanos · llanosnutricion@gmail.com · +34 677 876 638
-            </div>
-        </div>
-
-        </body>
-        </html>`;
-
         const fileName = `PLAN NUTRICIONAL ${mesActual} ${anioActual} ${client.name.toUpperCase()} ${client.surname.toUpperCase()}.pdf`;
 
-        const container = document.createElement('div');
-        container.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;';
-        container.innerHTML = htmlContent;
-        document.body.appendChild(container);
+        // Build HTML as body content only — <style> lives inside the div, NOT inside <head>
+        // (container.innerHTML strips <html>/<head>/<body> tags and loses <head> styles)
+        const pdfBodyHtml = `
+        <style>
+            .pdf-wrap * { margin: 0; padding: 0; box-sizing: border-box; }
+            .pdf-wrap { font-family: Arial, Helvetica, sans-serif; color: #374151; background: #fff; font-size: 13px; line-height: 1.5; width: 794px; }
+
+            /* HEADER */
+            .pdf-header { background: #38C7A5; color: white; padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; }
+            .pdf-logo-area { display: flex; align-items: center; gap: 16px; }
+            .pdf-logo-area img { height: 52px; width: auto; }
+            .pdf-brand-name { font-size: 22px; font-weight: 700; }
+            .pdf-brand-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+            .pdf-contact { text-align: right; font-size: 12px; line-height: 1.8; opacity: 0.95; }
+            .pdf-contact strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+
+            /* BANNER */
+            .pdf-banner { background: #f0fdf9; border-left: 5px solid #38C7A5; padding: 14px 36px; }
+            .pdf-banner-month { font-size: 11px; color: #38C7A5; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+            .pdf-banner-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-top: 2px; }
+
+            /* SECTION */
+            .pdf-section { padding: 22px 36px; }
+            .pdf-section-title { font-size: 10px; font-weight: 700; color: #38C7A5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+
+            /* CLIENT GRID */
+            .pdf-client-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .pdf-stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; }
+            .pdf-stat-label { font-size: 9px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+            .pdf-stat-value { font-size: 15px; font-weight: 700; color: #1f2937; margin-top: 2px; }
+            .pdf-stat-hl { background: #f0fdf9; border-color: #38C7A5; }
+            .pdf-stat-hl .pdf-stat-value { color: #38C7A5; }
+
+            /* MACROS */
+            .pdf-macros { display: flex; gap: 8px; }
+            .pdf-macro { flex: 1; border-radius: 8px; padding: 10px; text-align: center; border: 1px solid #e5e7eb; }
+            .pdf-macro-icon { font-size: 16px; }
+            .pdf-macro-val { font-size: 18px; font-weight: 700; color: #1f2937; }
+            .pdf-macro-lbl { font-size: 9px; color: #6b7280; margin-top: 2px; }
+            .pdf-macro-energy { background: #fffbeb; border-color: #fcd34d; }
+            .pdf-macro-protein { background: #eff6ff; border-color: #93c5fd; }
+            .pdf-macro-carbs { background: #fff7ed; border-color: #fdba74; }
+            .pdf-macro-fat { background: #f0fdf4; border-color: #86efac; }
+            .pdf-macro-fiber { background: #f0fdf9; border-color: #6ee7b7; }
+
+            /* MEALS */
+            .pdf-meal { margin-bottom: 18px; }
+            .pdf-meal-title { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb; }
+            .pdf-meal-time { background: #38C7A5; color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+            .pdf-meal-name { font-size: 15px; font-weight: 700; color: #1f2937; }
+            .pdf-meal-items { list-style: none; padding: 0; }
+            .pdf-meal-items li { padding: 5px 0 5px 14px; border-bottom: 1px dashed #f3f4f6; position: relative; font-size: 12px; color: #374151; }
+            .pdf-meal-items li::before { content: '•'; position: absolute; left: 0; color: #38C7A5; font-weight: 700; }
+            .pdf-meal-items li:last-child { border-bottom: none; }
+            .pdf-qty { font-weight: 700; color: #38C7A5; margin-right: 4px; }
+            .pdf-equiv { color: #6b7280; font-style: italic; }
+            .pdf-or { color: #d1d5db; font-style: normal; font-weight: 600; }
+
+            /* RECS */
+            .pdf-recs { font-size: 12px; line-height: 1.7; color: #374151; }
+            .pdf-recs p { margin-bottom: 6px; }
+
+            /* FOOTER */
+            .pdf-footer { background: #f9fafb; border-top: 2px solid #38C7A5; padding: 14px 36px; display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
+            .pdf-footer-brand { font-size: 13px; font-weight: 700; color: #38C7A5; }
+            .pdf-footer-contact { font-size: 10px; color: #6b7280; text-align: right; line-height: 1.6; }
+        </style>
+
+        <div class="pdf-wrap">
+            <!-- HEADER -->
+            <div class="pdf-header">
+                <div class="pdf-logo-area">
+                    <img src="Logo_ML_Sin_Fondo.png" alt="" onerror="this.style.display='none'">
+                    <div>
+                        <div class="pdf-brand-name">ML Nutricion</div>
+                        <div class="pdf-brand-sub">Nutricion personalizada y salud</div>
+                    </div>
+                </div>
+                <div class="pdf-contact">
+                    <strong>Mario Llanos</strong>
+                    Tel: +34 677 876 638<br>
+                    llanosnutricion@gmail.com<br>
+                    Servicio: En linea
+                </div>
+            </div>
+
+            <!-- BANNER -->
+            <div class="pdf-banner">
+                <div class="pdf-banner-month">${mesActual} ${anioActual}</div>
+                <div class="pdf-banner-title">Plan Nutricional &middot; ${client.name} ${client.surname}</div>
+            </div>
+
+            <!-- DATOS CLIENTE -->
+            <div class="pdf-section">
+                <div class="pdf-section-title">Datos del cliente</div>
+                <div class="pdf-client-grid">
+                    <div class="pdf-stat pdf-stat-hl">
+                        <div class="pdf-stat-label">Nombre</div>
+                        <div class="pdf-stat-value">${client.name} ${client.surname}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Edad</div>
+                        <div class="pdf-stat-value">${client.age} anos</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Email</div>
+                        <div class="pdf-stat-value" style="font-size:11px">${client.email || '—'}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Peso</div>
+                        <div class="pdf-stat-value">${peso ? peso + ' kg' : '—'}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Altura</div>
+                        <div class="pdf-stat-value">${altura ? altura + ' cm' : '—'}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">IMC</div>
+                        <div class="pdf-stat-value">${imc || '—'} kg/m2</div>
+                    </div>
+                </div>
+            </div>
+
+            ${macrosHtml ? `
+            <!-- MACROS -->
+            <div class="pdf-section" style="padding-top:0">
+                <div class="pdf-section-title">Objetivos nutricionales</div>
+                ${macrosHtml.replace(/class="macros-grid"/g,'class="pdf-macros"')
+                    .replace(/class="macro-card energy"/g,'class="pdf-macro pdf-macro-energy"')
+                    .replace(/class="macro-card protein"/g,'class="pdf-macro pdf-macro-protein"')
+                    .replace(/class="macro-card carbs"/g,'class="pdf-macro pdf-macro-carbs"')
+                    .replace(/class="macro-card fat"/g,'class="pdf-macro pdf-macro-fat"')
+                    .replace(/class="macro-card fiber"/g,'class="pdf-macro pdf-macro-fiber"')
+                    .replace(/class="macro-icon"/g,'class="pdf-macro-icon"')
+                    .replace(/class="macro-val"/g,'class="pdf-macro-val"')
+                    .replace(/class="macro-lbl"/g,'class="pdf-macro-lbl"')}
+            </div>` : ''}
+
+            <!-- COMIDAS -->
+            <div class="pdf-section" style="padding-top:0">
+                <div class="pdf-section-title">Plan de comidas</div>
+                ${comidasHtml
+                    .replace(/class="meal-block"/g,'class="pdf-meal"')
+                    .replace(/class="meal-title"/g,'class="pdf-meal-title"')
+                    .replace(/class="meal-time-badge"/g,'class="pdf-meal-time"')
+                    .replace(/class="meal-name"/g,'class="pdf-meal-name"')
+                    .replace(/class="meal-items"/g,'class="pdf-meal-items"')
+                    .replace(/class="qty"/g,'class="pdf-qty"')
+                    .replace(/class="equiv-item"/g,'class="pdf-equiv"')
+                    .replace(/class="or-sep"/g,'class="pdf-or"')
+                    || '<p style="color:#9ca3af;font-style:italic;">No hay comidas en el plan.</p>'}
+            </div>
+
+            ${recsHtml ? `
+            <!-- RECOMENDACIONES -->
+            <div class="pdf-section" style="padding-top:0">
+                <div class="pdf-section-title">Recomendaciones</div>
+                <div class="pdf-recs">${recsHtml}</div>
+            </div>` : ''}
+
+            <!-- FOOTER -->
+            <div class="pdf-footer">
+                <div class="pdf-footer-brand">ML Nutricion</div>
+                <div class="pdf-footer-contact">
+                    Mario Llanos &middot; llanosnutricion@gmail.com &middot; +34 677 876 638
+                </div>
+            </div>
+        </div>`;
+
+        // Create container — width in px (794px ≈ A4 at 96dpi), off-screen left so html2canvas can render it
+        const pdfContainer = document.createElement('div');
+        pdfContainer.style.cssText = 'position:absolute;left:-9999px;top:0;width:794px;background:#fff;';
+        pdfContainer.innerHTML = pdfBodyHtml;
+        document.body.appendChild(pdfContainer);
+
+        // Small delay so images can start loading
+        await new Promise(r => setTimeout(r, 300));
 
         await html2pdf().set({
             margin: 0,
             filename: fileName,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 794 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(container).save();
+        }).from(pdfContainer).save();
 
-        document.body.removeChild(container);
+        document.body.removeChild(pdfContainer);
 
         } catch (error) {
             console.error('Error al generar PDF:', error);
