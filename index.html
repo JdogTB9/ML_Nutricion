@@ -4808,6 +4808,7 @@ body {
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
     <script>
 
@@ -6139,10 +6140,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 4. Guardar Planificación
-    async function savePlanning() {
+    async function savePlanning(silent = false) {
         const kcal = parseFloat(planningKcalInput.value);
         if (!kcal) {
-            alert('Por favor, indica las necesidades energéticas (kcal/día).');
+            if (!silent) alert('Por favor, indica las necesidades energéticas (kcal/día).');
             return;
         }
 
@@ -6208,12 +6209,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (error) throw error;
 
-            alert('Planificación guardada correctamente.');
+            if (!silent) alert('Planificación guardada correctamente.');
+            else showAutosaveBadge('Planificación guardada');
             fetchClientPlanning(currentClientId); // Recargar
 
         } catch (error) {
             console.error('Error al guardar planificación:', error);
-            alert('Error al guardar: ' + error.message);
+            if (!silent) alert('Error al guardar: ' + error.message);
         }
     }
 
@@ -6301,13 +6303,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function saveRecommendations() {
+    async function saveRecommendations(silent = false) {
         if (!currentClientId) return;
 
         try {
             const htmlContent = recommendationsEditor ? recommendationsEditor.innerHTML : '';
 
-            // Si ya existe una planificación, actualizamos el campo recomendaciones
             if (currentPlanningId) {
                 const { error } = await supabaseClient
                     .from('Planificaciones')
@@ -6315,16 +6316,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     .eq('id_planificacion', currentPlanningId);
 
                 if (error) throw error;
-                alert('Recomendaciones guardadas correctamente.');
-            } else {
-                // Si no existe planificación, avisamos que debe crear una primero o la creamos básica
-                // Para simplificar, pedimos que guarde la planificación primero para tener kcal y demás
+                if (!silent) alert('Recomendaciones guardadas correctamente.');
+                else showAutosaveBadge('Recomendaciones guardadas');
+            } else if (!silent) {
                 alert('Primero debes guardar los datos de la pestaña "Planificación" para poder guardar las recomendaciones.');
             }
 
         } catch (error) {
             console.error('Error al guardar recomendaciones:', error);
-            alert('Error al guardar: ' + error.message);
+            if (!silent) alert('Error al guardar: ' + error.message);
         }
     }
 
@@ -6607,7 +6607,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatNutrient(value, suffix) {
-        return Math.round(value * 10) / 10 + ' ' + suffix;
+        return Math.round(value) + ' ' + suffix;
     }
 
     // Helper: auto-calcular gramos para igualar kcal de referencia
@@ -7235,6 +7235,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }));
             } else {
                 document.getElementById('nutritionPlanTitle').value = 'Todos los días';
+                // Initialize with 5 default meals when no plan exists
+                const defaultMeals = [
+                    { nombre: 'Desayuno',     hora: '08:00' },
+                    { nombre: 'Media mañana', hora: '11:00' },
+                    { nombre: 'Comida',       hora: '14:00' },
+                    { nombre: 'Merienda',     hora: '17:00' },
+                    { nombre: 'Cena',         hora: '21:00' }
+                ];
+                nutritionPlanMeals = defaultMeals.map((m, idx) => ({
+                    _localId: 'default_' + idx + '_' + Date.now(),
+                    nombre: m.nombre,
+                    hora: m.hora,
+                    orden: idx,
+                    platos: [{ _localId: 'default_plato_' + idx + '_' + Date.now(), nombre: 'Alimentos', orden: 0, items: [] }]
+                }));
             }
 
             renderNutritionPlan();
@@ -7437,7 +7452,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="meal-time">${meal.hora || '12:00'}</span>
                 <span class="meal-name">${meal.nombre}</span>
                 <div class="meal-card-actions">
-                    <button class="food-action-btn" title="Añadir plato"><i class="fa-solid fa-plus"></i></button>
+                    <button class="food-action-btn" title="Añadir alimento"><i class="fa-solid fa-plus"></i></button>
                     <button class="food-action-btn delete" title="Eliminar comida"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
                 <i class="fa-solid fa-chevron-up meal-toggle-icon"></i>
@@ -7450,10 +7465,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 meal._collapsed = card.classList.contains('collapsed');
             });
 
-            // Add plato
+            // Add food to meal (single section per meal)
             header.querySelector('.food-action-btn:not(.delete)').addEventListener('click', (e) => {
                 e.stopPropagation();
-                addPlatoToMeal(meal);
+                if (!meal.platos.length) {
+                    meal.platos.push({ _localId: 'new_' + Date.now(), nombre: 'Alimentos', orden: 0, items: [] });
+                }
+                openPlanFoodSearch(meal.platos[0]._localId);
             });
 
             // Delete meal
@@ -7462,6 +7480,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (confirm(`¿Eliminar "${meal.nombre}"?`)) {
                     nutritionPlanMeals = nutritionPlanMeals.filter(m => m !== meal);
                     renderNutritionPlan();
+                    if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
                 }
             });
 
@@ -7471,41 +7490,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = document.createElement('div');
             body.className = 'meal-card-body';
 
-            // Platos
-            meal.platos.forEach(plato => {
-                const platoSection = document.createElement('div');
-                platoSection.className = 'plato-section';
-
-                // Plato header
-                const platoHeader = document.createElement('div');
-                platoHeader.className = 'plato-header';
-                platoHeader.innerHTML = `
-                    <span class="plato-name">${plato.nombre}</span>
-                    <div class="plato-actions">
-                        <button class="food-action-btn" title="Añadir alimento"><i class="fa-solid fa-plus"></i></button>
-                        <button class="food-action-btn delete" title="Eliminar plato"><i class="fa-regular fa-trash-can"></i></button>
-                    </div>
-                `;
-
-                // Add food to plato
-                platoHeader.querySelector('.food-action-btn:not(.delete)').addEventListener('click', () => {
-                    openPlanFoodSearch(plato._localId);
-                });
-
-                // Delete plato
-                platoHeader.querySelector('.food-action-btn.delete').addEventListener('click', () => {
-                    meal.platos = meal.platos.filter(p => p !== plato);
-                    renderNutritionPlan();
-                });
-
-                platoSection.appendChild(platoHeader);
+            // Single flat item list (no plato sections)
+            // Ensure at least one plato exists and merge legacy multi-plato data
+            if (!meal.platos.length) {
+                meal.platos.push({ _localId: 'new_' + Date.now(), nombre: 'Alimentos', orden: 0, items: [] });
+            }
+            if (meal.platos.length > 1) {
+                for (let pi = 1; pi < meal.platos.length; pi++) {
+                    meal.platos[0].items.push(...meal.platos[pi].items);
+                }
+                meal.platos = [meal.platos[0]];
+            }
+            {
+                const plato = meal.platos[0];
 
                 // Items
                 const itemsContainer = document.createElement('div');
                 itemsContainer.className = 'plato-items';
 
                 if (plato.items.length === 0) {
-                    itemsContainer.innerHTML = '<p class="plato-empty">No fueron introducidos alimentos</p>';
+                    itemsContainer.innerHTML = '<p class="plato-empty">Usa el botón + para añadir alimentos</p>';
                 } else {
                     // Group items: normal items + equivalence groups
                     const rendered = new Set();
@@ -7529,6 +7533,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             groupHeader.querySelector('.plato-item-remove').addEventListener('click', () => {
                                 plato.items = plato.items.filter(i => i._equivGroupId !== item._equivGroupId);
                                 renderNutritionPlan();
+                                if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
                             });
                             groupEl.appendChild(groupHeader);
 
@@ -7569,6 +7574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 giEl.querySelector('.plato-item-remove').addEventListener('click', () => {
                                     plato.items = plato.items.filter(i => i !== gi);
                                     renderNutritionPlan();
+                                    if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
                                 });
 
                                 giEl.querySelector('.plato-item-qty').addEventListener('input', (e) => {
@@ -7598,6 +7604,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                     updateMealMacros(card, meal);
                                     if (window.updateNutritionAnalysis) window.updateNutritionAnalysis();
+                                    if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
                                 });
 
                                 groupEl.appendChild(giEl);
@@ -7639,11 +7646,17 @@ document.addEventListener('DOMContentLoaded', () => {
                                 itemEl.querySelector('[data-m="p"]').textContent = formatNutrient(newMacros.proteinas, 'g');
                                 updateMealMacros(card, meal);
                                 if (window.updateNutritionAnalysis) window.updateNutritionAnalysis();
+                                if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
+                            });
+
+                            itemEl.querySelector('.plato-item-name-input').addEventListener('change', () => {
+                                if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
                             });
 
                             itemEl.querySelector('.plato-item-remove').addEventListener('click', () => {
                                 plato.items = plato.items.filter(i => i !== item);
                                 renderNutritionPlan();
+                                if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
                             });
 
                             itemsContainer.appendChild(itemEl);
@@ -7651,16 +7664,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-                platoSection.appendChild(itemsContainer);
-                body.appendChild(platoSection);
-            });
-
-            // Add plato button at bottom
-            const addPlatoBtn = document.createElement('button');
-            addPlatoBtn.className = 'add-plato-btn';
-            addPlatoBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Añadir sección (plato, postre, bebida...)';
-            addPlatoBtn.addEventListener('click', () => addPlatoToMeal(meal));
-            body.appendChild(addPlatoBtn);
+                body.appendChild(itemsContainer);
+            }
 
             // --- Macros Summary ---
             const macrosSummary = document.createElement('div');
@@ -7865,6 +7870,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cantidad: qty,
                     unidad: 'gramos'
                 });
+                document.getElementById('planFoodSearchModal').classList.remove('active');
             });
 
             container.appendChild(row);
@@ -7929,6 +7935,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cantidad: qty,
                     unidad: 'gramos'
                 });
+                document.getElementById('planFoodSearchModal').classList.remove('active');
             });
 
             container.appendChild(row);
@@ -7975,6 +7982,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                     renderNutritionPlan();
+                    if (window.triggerAutoSaveNutritionPlan) window.triggerAutoSaveNutritionPlan();
                     return;
                 }
             }
@@ -7982,7 +7990,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 8. Save full plan to Supabase
-    async function saveNutritionPlan() {
+    async function saveNutritionPlan(silent = false) {
         if (!currentClientId) return;
 
         try {
@@ -8060,13 +8068,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            alert('Plan nutricional guardado correctamente.');
+            if (!silent) alert('Plan nutricional guardado correctamente.');
+            else showAutosaveBadge('Plan guardado');
             // Reload to get DB ids
             await loadNutritionPlan(currentClientId);
 
         } catch (error) {
             console.error('Error al guardar plan nutricional:', error);
-            alert('Error al guardar: ' + error.message);
+            if (!silent) alert('Error al guardar: ' + error.message);
         }
     }
 
@@ -8169,6 +8178,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Expose for openClientProfile
     window.loadNutritionPlan = loadNutritionPlan;
+
+    // ==========================================
+    // AUTOGUARDADO (debounce)
+    // ==========================================
+
+    // Badge visual de guardado (esquina inferior derecha)
+    function showAutosaveBadge(msg) {
+        let badge = document.getElementById('autosaveBadge');
+        if (!badge) {
+            badge = document.createElement('div');
+            badge.id = 'autosaveBadge';
+            badge.style.cssText = `
+                position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+                background: #38C7A5; color: #fff; font-size: 13px; font-weight: 600;
+                padding: 8px 18px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+            `;
+            document.body.appendChild(badge);
+        }
+        badge.textContent = '✓ ' + msg;
+        badge.style.opacity = '1';
+        clearTimeout(badge._hideTimer);
+        badge._hideTimer = setTimeout(() => { badge.style.opacity = '0'; }, 2500);
+    }
+
+    // Debounce timers
+    let _autosaveNutritionTimer = null;
+    let _autosavePlanningTimer = null;
+    let _autosaveRecsTimer = null;
+
+    function triggerAutoSaveNutritionPlan() {
+        clearTimeout(_autosaveNutritionTimer);
+        _autosaveNutritionTimer = setTimeout(() => saveNutritionPlan(true), 2500);
+    }
+
+    function triggerAutoSavePlanning() {
+        clearTimeout(_autosavePlanningTimer);
+        _autosavePlanningTimer = setTimeout(() => savePlanning(true), 2500);
+    }
+
+    function triggerAutoSaveRecommendations() {
+        clearTimeout(_autosaveRecsTimer);
+        _autosaveRecsTimer = setTimeout(() => saveRecommendations(true), 2500);
+    }
+
+    // Expose for use in nutrition plan rendering
+    window.triggerAutoSaveNutritionPlan = triggerAutoSaveNutritionPlan;
+
+    // Wire: nutrition plan title input
+    const nutritionPlanTitleInput = document.getElementById('nutritionPlanTitle');
+    if (nutritionPlanTitleInput) {
+        nutritionPlanTitleInput.addEventListener('input', triggerAutoSaveNutritionPlan);
+    }
+
+    // Wire: recommendations editor
+    const recsEditorEl = document.getElementById('recommendationsEditor');
+    if (recsEditorEl) {
+        recsEditorEl.addEventListener('input', triggerAutoSaveRecommendations);
+    }
+
+    // Wire: planning inputs
+    ['planningKcal', 'planningGasto',
+     'planningFatsPercent', 'planningFatsRange',
+     'planningCarbsPercent', 'planningCarbsRange',
+     'planningProtPercent', 'planningProtRange',
+     'planningFiberSource', 'planningFiberGrams'
+    ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', triggerAutoSavePlanning);
+            el.addEventListener('change', triggerAutoSavePlanning);
+        }
+    });
 
     // ==========================================
     // MÓDULO DE SEGUIMIENTO
@@ -8856,23 +8938,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const barsEl = document.getElementById('analysisContent');
         const noPlanEl = document.getElementById('analysisNoPlanning');
 
-        if (!planningTargets) {
-            if (barsEl) barsEl.style.display = 'none';
-            if (noPlanEl) noPlanEl.style.display = '';
-            return;
-        }
-
+        // Always show the panel with current totals, even without planning targets
         if (barsEl) barsEl.style.display = '';
         if (noPlanEl) noPlanEl.style.display = 'none';
 
         const totals = calculatePlanTotals();
 
         const fields = [
-            { key: 'Kcal', current: totals.kcal, target: planningTargets.kcal },
-            { key: 'Grasas', current: totals.grasas, target: planningTargets.grasas },
-            { key: 'Hidratos', current: totals.hidratos, target: planningTargets.hidratos },
-            { key: 'Proteinas', current: totals.proteinas, target: planningTargets.proteinas },
-            { key: 'Fibra', current: totals.fibra, target: planningTargets.fibra }
+            { key: 'Kcal', current: totals.kcal, target: planningTargets ? planningTargets.kcal : 0 },
+            { key: 'Grasas', current: totals.grasas, target: planningTargets ? planningTargets.grasas : 0 },
+            { key: 'Hidratos', current: totals.hidratos, target: planningTargets ? planningTargets.hidratos : 0 },
+            { key: 'Proteinas', current: totals.proteinas, target: planningTargets ? planningTargets.proteinas : 0 },
+            { key: 'Fibra', current: totals.fibra, target: planningTargets ? planningTargets.fibra : 0 }
         ];
 
         fields.forEach(f => {
@@ -8883,16 +8960,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!currentEl) return;
 
-            const currentVal = Math.round(f.current * 10) / 10;
-            const targetVal = Math.round(f.target * 10) / 10;
-            const pct = targetVal > 0 ? (currentVal / targetVal) * 100 : 0;
+            const currentVal = Math.round(f.current);
+            const hasTarget = planningTargets && f.target > 0;
+            const targetVal = hasTarget ? Math.round(f.target) : null;
+            const pct = hasTarget ? (currentVal / targetVal) * 100 : 0;
             const displayPct = Math.round(pct);
             const barWidth = Math.min(pct, 100);
 
             currentEl.textContent = currentVal;
-            targetEl.textContent = targetVal;
+            targetEl.textContent = hasTarget ? targetVal : '—';
             barEl.style.width = barWidth + '%';
-            percentEl.textContent = displayPct + '%';
+            percentEl.textContent = hasTarget ? displayPct + '%' : '';
 
             // Overflow styling
             if (pct > 100) {
@@ -8986,7 +9064,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.loadPlanningTargets = loadPlanningTargets;
 
     // ==========================================
-    // GENERADOR DE PDF
+    // GENERADOR DE PDF (html2pdf.js)
     // ==========================================
 
     async function generateClientPDF() {
@@ -8995,16 +9073,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const client = clients.find(c => c.id === currentClientId);
         if (!client) { alert('Cliente no encontrado'); return; }
 
-        // Check jsPDF loaded
-        if (!window.jspdf && !window.jsPDF && typeof jspdf === 'undefined') {
-            alert('Error: la librería jsPDF no se ha cargado. Recarga la página e inténtalo de nuevo.');
-            console.error('jsPDF not found. window.jspdf:', window.jspdf, 'window.jsPDF:', window.jsPDF);
+        if (typeof html2pdf === 'undefined') {
+            alert('Error: la librería html2pdf no se ha cargado. Recarga la página e inténtalo de nuevo.');
             return;
         }
 
         try {
 
-        // Load data
+        // Load data from Supabase
         let planData = null;
         try {
             const res = await supabaseClient.from('Planificaciones').select('*').eq('id_cliente', currentClientId).maybeSingle();
@@ -9027,307 +9103,258 @@ document.addEventListener('DOMContentLoaded', () => {
         const altura = lastMedicion?.[0]?.altura || null;
         const imc = (peso && altura) ? (peso / ((altura / 100) ** 2)).toFixed(1) : null;
 
-        // Month names
         const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
         const nowDate = new Date();
         const mesActual = meses[nowDate.getMonth()];
         const anioActual = nowDate.getFullYear();
 
-        // jsPDF
-        const JsPDF = window.jspdf?.jsPDF || window.jsPDF;
-        const doc = new JsPDF('p', 'mm', 'letter');
-        const pageW = doc.internal.pageSize.getWidth();
-        const pageH = doc.internal.pageSize.getHeight();
-        const marginL = 20;
-        const marginR = 20;
-        const contentW = pageW - marginL - marginR;
-        let y = 15;
-
-        const GREEN = [56, 199, 165];
-        const DARK = [55, 65, 81];
-        const GRAY = [107, 114, 128];
-
-        // Load logo
-        let logoImg = null;
-        try {
-            const img = new Image();
-            await new Promise((resolve) => {
-                img.onload = resolve;
-                img.onerror = () => { console.warn('Logo no cargado'); resolve(); };
-                img.src = 'Logo_ML_Sin_Fondo.png';
-            });
-            if (img.width > 0) {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                canvas.getContext('2d').drawImage(img, 0, 0);
-                logoImg = canvas.toDataURL('image/png');
-            }
-        } catch (e) {
-            console.warn('No se pudo cargar el logo:', e);
-        }
-
-        function checkNewPage(needed) {
-            if (y + needed > pageH - 20) {
-                doc.addPage();
-                y = 20;
-                return true;
-            }
-            return false;
-        }
-
-        // ---- HEADER ----
-        function drawHeader() {
-            const headerY = y;
-            if (logoImg) {
-                doc.addImage(logoImg, 'PNG', marginL, headerY, 20, 19);
-            }
-
-            // Nutricionista info: 2 rows x 2 columns with green labels
-            const infoStartX = pageW - marginR - 125;
-            const col2X = pageW - marginR - 48;
-            const row1Y = headerY + 6;
-            const row2Y = headerY + 13;
-
-            doc.setFontSize(7.5);
-            doc.setFont('helvetica', 'normal');
-
-            // Helper: label (green) + value (dark) inline
-            function labelValue(x, yPos, label, value) {
-                doc.setTextColor(...GREEN);
-                doc.text(label + ': ', x, yPos);
-                const labelW = doc.getTextWidth(label + ': ');
-                doc.setTextColor(...DARK);
-                doc.text(value, x + labelW, yPos);
-            }
-
-            // Row 1: Nutricionista | Telefono
-            labelValue(infoStartX, row1Y, 'Nutricionista', 'Mario Llanos Nutricion');
-            labelValue(col2X, row1Y, 'Telefono', '+34 677 876 638');
-
-            // Row 2: Correo | Servicio
-            labelValue(infoStartX, row2Y, 'Correo', 'llanosnutricion@gmail.com');
-            labelValue(col2X, row2Y, 'Servicio', 'En linea');
-
-            y = headerY + 20;
-
-            // Green line
-            doc.setDrawColor(...GREEN);
-            doc.setLineWidth(0.8);
-            doc.line(marginL, y, pageW - marginR, y);
-            y += 8;
-        }
-
-        drawHeader();
-
-        // ---- CLIENT INFO ----
-        doc.setFontSize(11);
-        doc.setTextColor(...GREEN);
-        doc.setFont('helvetica', 'bold');
-        doc.text('INFORMACIONES DEL CLIENTE', marginL, y);
-        y += 7;
-
-        doc.setFontSize(9);
-        doc.setTextColor(...DARK);
-        doc.setFont('helvetica', 'normal');
-
-        const clientInfo = [
-            [`${client.name} ${client.surname}`, `EDAD: ${client.age} años`, `ALTURA: ${altura ? altura + ' cm' : '—'}`],
-            [client.email || '', `IMC: ${imc || '—'} kg/m²`, `PESO: ${peso ? peso + ' kg' : '—'}`]
-        ];
-
-        clientInfo.forEach(row => {
-            const colW = contentW / 3;
-            row.forEach((text, i) => {
-                const x = marginL + (colW * i);
-                if (i === 0) {
-                    doc.setFont('helvetica', 'bold');
-                } else {
-                    doc.setFont('helvetica', 'normal');
-                }
-                doc.text(text, x, y);
-            });
-            y += 5;
-        });
-
-        y += 8;
-
-        // ---- COMIDAS ----
-        doc.setFontSize(11);
-        doc.setTextColor(...GREEN);
-        doc.setFont('helvetica', 'bold');
-        doc.text('COMIDAS', marginL, y);
-        y += 8;
-
+        // Build comidas HTML
+        let comidasHtml = '';
         if (planNutData && planNutData.Plan_Comidas) {
-            const comidas = planNutData.Plan_Comidas.sort((a, b) => {
+            const comidas = [...planNutData.Plan_Comidas].sort((a, b) => {
                 if (a.hora < b.hora) return -1;
                 if (a.hora > b.hora) return 1;
                 return a.orden - b.orden;
             });
 
             comidas.forEach(comida => {
-                checkNewPage(15);
-
-                // Hora + Nombre
-                doc.setFontSize(10);
-                doc.setTextColor(...GREEN);
-                doc.setFont('helvetica', 'bold');
-                doc.text(comida.hora || '12:00', marginL, y);
-                doc.setTextColor(...DARK);
-                doc.text(comida.nombre.toUpperCase(), marginL + 18, y);
-                y += 6;
-
+                // Flatten all items from all platos
+                const allItems = [];
                 const platos = (comida.Plan_Platos || []).sort((a, b) => a.orden - b.orden);
-
                 platos.forEach(plato => {
-                    const items = (plato.Plan_Items || []).sort((a, b) => a.orden - b.orden);
-                    if (items.length === 0) return;
+                    (plato.Plan_Items || []).sort((a, b) => a.orden - b.orden).forEach(i => allItems.push(i));
+                });
+                if (allItems.length === 0) return;
 
-                    checkNewPage(10);
-
-                    // Plato name as bullet header
-                    doc.setFontSize(8.5);
-                    doc.setTextColor(...DARK);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('*', marginL + 4, y);
-                    doc.text(plato.nombre.toUpperCase() + ':', marginL + 8, y);
-                    y += 5;
-
-                    // Items as sub-bullets under the plato
-                    const processed = new Set();
-                    doc.setFont('helvetica', 'normal');
-
-                    items.forEach(item => {
-                        if (processed.has(item.id_item)) return;
-
-                        checkNewPage(6);
-
-                        if (item.equiv_group) {
-                            // Equivalence: join with "o"
-                            const groupItems = items.filter(i => i.equiv_group === item.equiv_group);
-                            groupItems.forEach(gi => processed.add(gi.id_item));
-
-                            let text = '';
-                            groupItems.forEach((gi, idx) => {
-                                const nombre = gi.nota || (gi.Alimentos ? gi.Alimentos.nombre : 'Alimento');
-                                const qty = gi.cantidad || 100;
-                                if (idx > 0) text += ' o ';
-                                text += `${qty} gramos de ${nombre.toLowerCase()}`;
-                            });
-
-                            doc.setFontSize(8);
-                            doc.text('-', marginL + 10, y);
-                            const lines = doc.splitTextToSize(text, contentW - 18);
-                            lines.forEach(line => {
-                                checkNewPage(4);
-                                doc.text(line, marginL + 14, y);
-                                y += 3.8;
-                            });
-                            y += 1;
-
-                        } else {
-                            processed.add(item.id_item);
-                            const nombre = item.nota || (item.Alimentos ? item.Alimentos.nombre : 'Alimento');
-                            const qty = item.cantidad || 100;
-                            const text = `${qty} gramos de ${nombre.toLowerCase()}`;
-
-                            doc.setFontSize(8);
-                            doc.text('-', marginL + 10, y);
-                            const lines = doc.splitTextToSize(text, contentW - 18);
-                            lines.forEach(line => {
-                                checkNewPage(4);
-                                doc.text(line, marginL + 14, y);
-                                y += 3.8;
-                            });
-                            y += 1;
-                        }
-                    });
-                    y += 2;
+                let itemsHtml = '';
+                const processed = new Set();
+                allItems.forEach(item => {
+                    if (processed.has(item.id_item)) return;
+                    if (item.equiv_group) {
+                        const groupItems = allItems.filter(i => i.equiv_group === item.equiv_group);
+                        groupItems.forEach(gi => processed.add(gi.id_item));
+                        const parts = groupItems.map(gi => {
+                            const n = gi.nota || (gi.Alimentos ? gi.Alimentos.nombre : 'Alimento');
+                            return `<span class="qty">${Math.round(gi.cantidad || 100)} g</span> ${n}`;
+                        });
+                        itemsHtml += `<li class="equiv-item">${parts.join('<span class="or-sep"> ó </span>')}</li>`;
+                    } else {
+                        processed.add(item.id_item);
+                        const nombre = item.nota || (item.Alimentos ? item.Alimentos.nombre : 'Alimento');
+                        itemsHtml += `<li><span class="qty">${Math.round(item.cantidad || 100)} g</span> ${nombre}</li>`;
+                    }
                 });
 
-                y += 4;
+                comidasHtml += `
+                <div class="meal-block">
+                    <div class="meal-title">
+                        <span class="meal-time-badge">${comida.hora || '12:00'}</span>
+                        <span class="meal-name">${comida.nombre}</span>
+                    </div>
+                    <ul class="meal-items">${itemsHtml}</ul>
+                </div>`;
             });
         }
 
-        // ---- RECOMENDACIONES ----
-        checkNewPage(20);
-        y += 5;
+        // Macros summary
+        let macrosHtml = '';
+        if (planData && planData.kcal_diarias) {
+            macrosHtml = `
+            <div class="macros-grid">
+                <div class="macro-card energy"><div class="macro-icon">🔥</div><div class="macro-val">${Math.round(planData.kcal_diarias)}</div><div class="macro-lbl">kcal</div></div>
+                <div class="macro-card protein"><div class="macro-icon">💪</div><div class="macro-val">${Math.round(planData.gramos_proteinas || 0)}</div><div class="macro-lbl">g proteína</div></div>
+                <div class="macro-card carbs"><div class="macro-icon">🌾</div><div class="macro-val">${Math.round(planData.gramos_hidratos || 0)}</div><div class="macro-lbl">g hidratos</div></div>
+                <div class="macro-card fat"><div class="macro-icon">🥑</div><div class="macro-val">${Math.round(planData.gramos_grasas || 0)}</div><div class="macro-lbl">g grasas</div></div>
+                <div class="macro-card fiber"><div class="macro-icon">🥦</div><div class="macro-val">${Math.round(planData.fibra_gramos || 0)}</div><div class="macro-lbl">g fibra</div></div>
+            </div>`;
+        }
 
-        doc.setFontSize(11);
-        doc.setTextColor(...GREEN);
-        doc.setFont('helvetica', 'bold');
-        doc.text('RECOMENDACIONES', marginL, y);
-        y += 8;
-
-        // Get recommendations: prefer editor content (live), fallback to DB
+        // Recommendations (use live editor content, fallback to DB)
         const editorEl = document.getElementById('recommendationsEditor');
         const recsHtml = (editorEl && editorEl.innerHTML.trim()) ? editorEl.innerHTML : (planData?.recomendaciones || '');
-        if (recsHtml) {
-            // Convert HTML to lines: replace <br> and </p> with newlines, strip tags
-            const cleanText = recsHtml
-                .replace(/<br\s*\/?>/gi, '\n')
-                .replace(/<\/p>/gi, '\n')
-                .replace(/<\/div>/gi, '\n')
-                .replace(/<\/li>/gi, '\n')
-                .replace(/<[^>]+>/g, '')
-                .replace(/&nbsp;/g, ' ')
-                .replace(/&amp;/g, '&')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"')
-                .replace(/-->/g, '-->')
-                .trim();
 
-            const textLines = cleanText.split('\n');
-
-            textLines.forEach(rawLine => {
-                const text = rawLine.trim();
-                if (!text) { y += 2; return; }
-
-                // Detect bold titles (all uppercase, > 3 chars)
-                const isTitle = text === text.toUpperCase() && text.length > 3 && !/^\d/.test(text);
-
-                if (isTitle) {
-                    checkNewPage(8);
-                    y += 2;
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(9);
-                    doc.setTextColor(...DARK);
-                } else {
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8.5);
-                    doc.setTextColor(...DARK);
-                }
-
-                const wrappedLines = doc.splitTextToSize(text, contentW - 4);
-                wrappedLines.forEach(line => {
-                    checkNewPage(4.5);
-                    doc.text(line, marginL + 2, y);
-                    y += 4;
-                });
-            });
-        }
-
-        // ---- FIRMA como footer fijo de la última página (abajo derecha) ----
-        const totalPages = doc.internal.getNumberOfPages();
-        doc.setPage(totalPages); // ensure we're on the last page
-        const footerY = pageH - 18;
-        const sigRightX = pageW - marginR;
-        const sigLineWidth = 70;
-
-        doc.setDrawColor(...GRAY);
-        doc.setLineWidth(0.3);
-        doc.line(sigRightX - sigLineWidth, footerY, sigRightX, footerY);
-
-        doc.setFontSize(8);
-        doc.setTextColor(...GRAY);
-        doc.setFont('helvetica', 'normal');
-        doc.text('(ML Nutricion)', sigRightX - (sigLineWidth / 2), footerY + 5, { align: 'center' });
-
-        // Save
         const fileName = `PLAN NUTRICIONAL ${mesActual} ${anioActual} ${client.name.toUpperCase()} ${client.surname.toUpperCase()}.pdf`;
-        doc.save(fileName);
+
+        // Build HTML as body content only — <style> lives inside the div, NOT inside <head>
+        // (container.innerHTML strips <html>/<head>/<body> tags and loses <head> styles)
+        const pdfBodyHtml = `
+        <style>
+            .pdf-wrap * { margin: 0; padding: 0; box-sizing: border-box; }
+            .pdf-wrap { font-family: Arial, Helvetica, sans-serif; color: #374151; background: #fff; font-size: 13px; line-height: 1.5; width: 794px; }
+
+            /* HEADER */
+            .pdf-header { background: #38C7A5; color: white; padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; }
+            .pdf-logo-area { display: flex; align-items: center; gap: 16px; }
+            .pdf-logo-area img { height: 52px; width: auto; }
+            .pdf-brand-name { font-size: 22px; font-weight: 700; }
+            .pdf-brand-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+            .pdf-contact { text-align: right; font-size: 12px; line-height: 1.8; opacity: 0.95; }
+            .pdf-contact strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+
+            /* BANNER */
+            .pdf-banner { background: #f0fdf9; border-left: 5px solid #38C7A5; padding: 14px 36px; }
+            .pdf-banner-month { font-size: 11px; color: #38C7A5; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+            .pdf-banner-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-top: 2px; }
+
+            /* SECTION */
+            .pdf-section { padding: 22px 36px; }
+            .pdf-section-title { font-size: 10px; font-weight: 700; color: #38C7A5; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+
+            /* CLIENT GRID */
+            .pdf-client-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .pdf-stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; }
+            .pdf-stat-label { font-size: 9px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+            .pdf-stat-value { font-size: 15px; font-weight: 700; color: #1f2937; margin-top: 2px; }
+            .pdf-stat-hl { background: #f0fdf9; border-color: #38C7A5; }
+            .pdf-stat-hl .pdf-stat-value { color: #38C7A5; }
+
+            /* MACROS */
+            .pdf-macros { display: flex; gap: 8px; }
+            .pdf-macro { flex: 1; border-radius: 8px; padding: 10px; text-align: center; border: 1px solid #e5e7eb; }
+            .pdf-macro-icon { font-size: 16px; }
+            .pdf-macro-val { font-size: 18px; font-weight: 700; color: #1f2937; }
+            .pdf-macro-lbl { font-size: 9px; color: #6b7280; margin-top: 2px; }
+            .pdf-macro-energy { background: #fffbeb; border-color: #fcd34d; }
+            .pdf-macro-protein { background: #eff6ff; border-color: #93c5fd; }
+            .pdf-macro-carbs { background: #fff7ed; border-color: #fdba74; }
+            .pdf-macro-fat { background: #f0fdf4; border-color: #86efac; }
+            .pdf-macro-fiber { background: #f0fdf9; border-color: #6ee7b7; }
+
+            /* MEALS */
+            .pdf-meal { margin-bottom: 18px; }
+            .pdf-meal-title { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb; }
+            .pdf-meal-time { background: #38C7A5; color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+            .pdf-meal-name { font-size: 15px; font-weight: 700; color: #1f2937; }
+            .pdf-meal-items { list-style: none; padding: 0; }
+            .pdf-meal-items li { padding: 5px 0 5px 14px; border-bottom: 1px dashed #f3f4f6; position: relative; font-size: 12px; color: #374151; }
+            .pdf-meal-items li::before { content: '•'; position: absolute; left: 0; color: #38C7A5; font-weight: 700; }
+            .pdf-meal-items li:last-child { border-bottom: none; }
+            .pdf-qty { font-weight: 700; color: #38C7A5; margin-right: 4px; }
+            .pdf-equiv { color: #6b7280; font-style: italic; }
+            .pdf-or { color: #d1d5db; font-style: normal; font-weight: 600; }
+
+            /* RECS */
+            .pdf-recs { font-size: 12px; line-height: 1.7; color: #374151; }
+            .pdf-recs p { margin-bottom: 6px; }
+
+            /* FOOTER */
+            .pdf-footer { background: #f9fafb; border-top: 2px solid #38C7A5; padding: 14px 36px; display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
+            .pdf-footer-brand { font-size: 13px; font-weight: 700; color: #38C7A5; }
+            .pdf-footer-contact { font-size: 10px; color: #6b7280; text-align: right; line-height: 1.6; }
+        </style>
+
+        <div class="pdf-wrap">
+            <!-- HEADER -->
+            <div class="pdf-header">
+                <div class="pdf-logo-area">
+                    <img src="Logo_ML_Sin_Fondo.png" alt="" onerror="this.style.display='none'">
+                    <div>
+                        <div class="pdf-brand-name">ML Nutricion</div>
+                        <div class="pdf-brand-sub">Nutricion personalizada y salud</div>
+                    </div>
+                </div>
+                <div class="pdf-contact">
+                    <strong>Mario Llanos</strong>
+                    Tel: +34 677 876 638<br>
+                    llanosnutricion@gmail.com<br>
+                    Servicio: En linea
+                </div>
+            </div>
+
+            <!-- BANNER -->
+            <div class="pdf-banner">
+                <div class="pdf-banner-month">${mesActual} ${anioActual}</div>
+                <div class="pdf-banner-title">Plan Nutricional &middot; ${client.name} ${client.surname}</div>
+            </div>
+
+            <!-- DATOS CLIENTE -->
+            <div class="pdf-section">
+                <div class="pdf-section-title">Datos del cliente</div>
+                <div class="pdf-client-grid">
+                    <div class="pdf-stat pdf-stat-hl">
+                        <div class="pdf-stat-label">Nombre</div>
+                        <div class="pdf-stat-value">${client.name} ${client.surname}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Edad</div>
+                        <div class="pdf-stat-value">${client.age} anos</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Email</div>
+                        <div class="pdf-stat-value" style="font-size:11px">${client.email || '—'}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Peso</div>
+                        <div class="pdf-stat-value">${peso ? peso + ' kg' : '—'}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">Altura</div>
+                        <div class="pdf-stat-value">${altura ? altura + ' cm' : '—'}</div>
+                    </div>
+                    <div class="pdf-stat">
+                        <div class="pdf-stat-label">IMC</div>
+                        <div class="pdf-stat-value">${imc || '—'} kg/m2</div>
+                    </div>
+                </div>
+            </div>
+
+            ${macrosHtml ? `
+            <!-- MACROS -->
+            <div class="pdf-section" style="padding-top:0">
+                <div class="pdf-section-title">Objetivos nutricionales</div>
+                ${macrosHtml.replace(/class="macros-grid"/g,'class="pdf-macros"')
+                    .replace(/class="macro-card energy"/g,'class="pdf-macro pdf-macro-energy"')
+                    .replace(/class="macro-card protein"/g,'class="pdf-macro pdf-macro-protein"')
+                    .replace(/class="macro-card carbs"/g,'class="pdf-macro pdf-macro-carbs"')
+                    .replace(/class="macro-card fat"/g,'class="pdf-macro pdf-macro-fat"')
+                    .replace(/class="macro-card fiber"/g,'class="pdf-macro pdf-macro-fiber"')
+                    .replace(/class="macro-icon"/g,'class="pdf-macro-icon"')
+                    .replace(/class="macro-val"/g,'class="pdf-macro-val"')
+                    .replace(/class="macro-lbl"/g,'class="pdf-macro-lbl"')}
+            </div>` : ''}
+
+            <!-- COMIDAS -->
+            <div class="pdf-section" style="padding-top:0">
+                <div class="pdf-section-title">Plan de comidas</div>
+                ${comidasHtml
+                    .replace(/class="meal-block"/g,'class="pdf-meal"')
+                    .replace(/class="meal-title"/g,'class="pdf-meal-title"')
+                    .replace(/class="meal-time-badge"/g,'class="pdf-meal-time"')
+                    .replace(/class="meal-name"/g,'class="pdf-meal-name"')
+                    .replace(/class="meal-items"/g,'class="pdf-meal-items"')
+                    .replace(/class="qty"/g,'class="pdf-qty"')
+                    .replace(/class="equiv-item"/g,'class="pdf-equiv"')
+                    .replace(/class="or-sep"/g,'class="pdf-or"')
+                    || '<p style="color:#9ca3af;font-style:italic;">No hay comidas en el plan.</p>'}
+            </div>
+
+            ${recsHtml ? `
+            <!-- RECOMENDACIONES -->
+            <div class="pdf-section" style="padding-top:0">
+                <div class="pdf-section-title">Recomendaciones</div>
+                <div class="pdf-recs">${recsHtml}</div>
+            </div>` : ''}
+
+            <!-- FOOTER -->
+            <div class="pdf-footer">
+                <div class="pdf-footer-brand">ML Nutricion</div>
+                <div class="pdf-footer-contact">
+                    Mario Llanos &middot; llanosnutricion@gmail.com &middot; +34 677 876 638
+                </div>
+            </div>
+        </div>`;
+
+        // Wrap con ancho explícito en píxeles — html2pdf inyecta este string al body,
+        // lo captura con html2canvas en coordenadas válidas y lo elimina automáticamente
+        const pdfString = `<div style="width:794px;background:#fff;margin:0;padding:0;">${pdfBodyHtml}</div>`;
+
+        await html2pdf().set({
+            margin: 0,
+            filename: fileName,
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(pdfString).save();
 
         } catch (error) {
             console.error('Error al generar PDF:', error);
