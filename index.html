@@ -9344,24 +9344,17 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>`;
 
-        // Create container — width in px (794px ≈ A4 at 96dpi), off-screen left so html2canvas can render it
-        const pdfContainer = document.createElement('div');
-        pdfContainer.style.cssText = 'position:absolute;left:-9999px;top:0;width:794px;background:#fff;';
-        pdfContainer.innerHTML = pdfBodyHtml;
-        document.body.appendChild(pdfContainer);
-
-        // Small delay so images can start loading
-        await new Promise(r => setTimeout(r, 300));
+        // Wrap con ancho explícito en píxeles — html2pdf inyecta este string al body,
+        // lo captura con html2canvas en coordenadas válidas y lo elimina automáticamente
+        const pdfString = `<div style="width:794px;background:#fff;margin:0;padding:0;">${pdfBodyHtml}</div>`;
 
         await html2pdf().set({
             margin: 0,
             filename: fileName,
             image: { type: 'jpeg', quality: 0.95 },
-            html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 794 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(pdfContainer).save();
-
-        document.body.removeChild(pdfContainer);
+        }).from(pdfString).save();
 
         } catch (error) {
             console.error('Error al generar PDF:', error);
