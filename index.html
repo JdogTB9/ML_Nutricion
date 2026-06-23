@@ -9597,7 +9597,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 margin: [12, 0, 12, 0],
                 filename: pdfFileName,
                 image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
+                html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             }).from(pdfString).save();
         } catch(e) {
