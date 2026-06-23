@@ -4908,6 +4908,9 @@ body {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
     <script>
 
 // ==========================================
@@ -9398,6 +9401,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return a.orden - b.orden;
             });
 
+            // Texto de cada opción: la nota tal cual (ya incluye cantidades, como en el modelo
+            // de Nutrium); si no hay nota, se compone con cantidad + unidad + alimento.
+            const itemText = (it) => {
+                if (it.nota && it.nota.trim()) return it.nota.trim();
+                const nombre = it.Alimentos ? it.Alimentos.nombre : 'Alimento';
+                return `${Math.round(it.cantidad || 100)} ${it.unidad || 'gramos'} de ${nombre}`;
+            };
+
             comidas.forEach(comida => {
                 // Flatten all items from all platos
                 const allItems = [];
@@ -9414,40 +9425,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (item.equiv_group) {
                         const groupItems = allItems.filter(i => i.equiv_group === item.equiv_group);
                         groupItems.forEach(gi => processed.add(gi.id_item));
-                        const parts = groupItems.map(gi => {
-                            const n = gi.nota || (gi.Alimentos ? gi.Alimentos.nombre : 'Alimento');
-                            return `<span class="qty">${Math.round(gi.cantidad || 100)} g</span> ${n}`;
-                        });
-                        itemsHtml += `<li class="equiv-item">${parts.join('<span class="or-sep"> ó </span>')}</li>`;
+                        const parts = groupItems.map(itemText);
+                        itemsHtml += `<li>${parts.join(' <span class="pdf-or">o</span> ')}</li>`;
                     } else {
                         processed.add(item.id_item);
-                        const nombre = item.nota || (item.Alimentos ? item.Alimentos.nombre : 'Alimento');
-                        itemsHtml += `<li><span class="qty">${Math.round(item.cantidad || 100)} g</span> ${nombre}</li>`;
+                        itemsHtml += `<li>${itemText(item)}</li>`;
                     }
                 });
 
                 comidasHtml += `
-                <div class="meal-block">
-                    <div class="meal-title">
-                        <span class="meal-time-badge">${comida.hora || '12:00'}</span>
-                        <span class="meal-name">${comida.nombre}</span>
+                <div class="pdf-meal">
+                    <div class="pdf-meal-title">
+                        <span class="pdf-meal-time">${comida.hora || '12:00'}</span>
+                        <span class="pdf-meal-name">${comida.nombre}</span>
                     </div>
-                    <ul class="meal-items">${itemsHtml}</ul>
+                    <ul>${itemsHtml}</ul>
                 </div>`;
             });
-        }
-
-        // Macros summary
-        let macrosHtml = '';
-        if (planData && planData.kcal_diarias) {
-            macrosHtml = `
-            <div class="macros-grid">
-                <div class="macro-card energy"><div class="macro-icon">🔥</div><div class="macro-val">${Math.round(planData.kcal_diarias)}</div><div class="macro-lbl">kcal</div></div>
-                <div class="macro-card protein"><div class="macro-icon">💪</div><div class="macro-val">${Math.round(planData.gramos_proteinas || 0)}</div><div class="macro-lbl">g proteína</div></div>
-                <div class="macro-card carbs"><div class="macro-icon">🌾</div><div class="macro-val">${Math.round(planData.gramos_hidratos || 0)}</div><div class="macro-lbl">g hidratos</div></div>
-                <div class="macro-card fat"><div class="macro-icon">🥑</div><div class="macro-val">${Math.round(planData.gramos_grasas || 0)}</div><div class="macro-lbl">g grasas</div></div>
-                <div class="macro-card fiber"><div class="macro-icon">🥦</div><div class="macro-val">${Math.round(planData.fibra_gramos || 0)}</div><div class="macro-lbl">g fibra</div></div>
-            </div>`;
         }
 
         // Recommendations (use live editor content, fallback to DB)
@@ -9462,155 +9456,92 @@ document.addEventListener('DOMContentLoaded', () => {
         const pdfBodyHtml = `
         <style>
             .pdf-wrap * { margin: 0; padding: 0; box-sizing: border-box; }
-            .pdf-wrap { font-family: Arial, Helvetica, sans-serif; color: #374151; background: #fff; font-size: 13px; line-height: 1.5; width: 794px; }
+            .pdf-wrap { font-family: 'Lato', Arial, Helvetica, sans-serif; color: #6E7C91; background: #fff; font-size: 13px; line-height: 1.5; width: 794px; padding: 36px 40px; }
 
             /* HEADER */
-            .pdf-header { background: #38C7A5; color: white; padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; }
-            .pdf-logo-area { display: flex; flex-direction: column; align-items: center; margin-left: 24px; gap: 8px; }
-            .pdf-logo-circle { width: 90px; height: 90px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-            .pdf-logo-circle img { width: 72px; height: 72px; object-fit: contain; }
-            .pdf-brand-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
-            .pdf-contact { text-align: right; font-size: 12px; line-height: 1.8; opacity: 0.95; }
-            .pdf-contact strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+            .pdf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+            .pdf-logo img { height: 64px; width: auto; object-fit: contain; display: block; }
+            .pdf-contact { display: grid; grid-template-columns: auto auto; column-gap: 40px; row-gap: 10px; font-size: 13px; color: #6E7C91; }
+            .pdf-contact span { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+            .pdf-contact i { color: #1AB394; width: 16px; text-align: center; flex-shrink: 0; }
 
-            /* BANNER */
-            .pdf-banner { background: #f0fdf9; border-left: 5px solid #38C7A5; padding: 14px 36px; }
-            .pdf-banner-month { font-size: 11px; color: #38C7A5; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-            .pdf-banner-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-top: 2px; }
+            /* SECTION TITLES */
+            .pdf-section-title { font-size: 15px; font-weight: 900; color: #1AB394; text-transform: uppercase; letter-spacing: 0.5px; margin: 26px 0 14px; }
 
-            /* SECTION */
-            .pdf-section { padding: 22px 36px; }
-            .pdf-section-title { font-size: 15px; font-weight: 700; color: #38C7A5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; border-bottom: 2px solid #38C7A5; padding-bottom: 6px; }
-
-            /* CLIENT GRID */
-            .pdf-client-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-            .pdf-stat { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px 10px; }
-            .pdf-stat-label { font-size: 8px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-            .pdf-stat-value { font-size: 9px; font-weight: 700; color: #1f2937; margin-top: 1px; }
-            .pdf-stat-hl { background: #f0fdf9; border-color: #38C7A5; }
-            .pdf-stat-hl .pdf-stat-value { color: #38C7A5; }
-
-            /* MACROS */
-            .pdf-macros { display: flex; gap: 8px; }
-            .pdf-macro { flex: 1; border-radius: 8px; padding: 10px; text-align: center; border: 1px solid #e5e7eb; }
-            .pdf-macro-icon { font-size: 16px; }
-            .pdf-macro-val { font-size: 18px; font-weight: 700; color: #1f2937; }
-            .pdf-macro-lbl { font-size: 9px; color: #6b7280; margin-top: 2px; }
-            .pdf-macro-energy { background: #fffbeb; border-color: #fcd34d; }
-            .pdf-macro-protein { background: #eff6ff; border-color: #93c5fd; }
-            .pdf-macro-carbs { background: #fff7ed; border-color: #fdba74; }
-            .pdf-macro-fat { background: #f0fdf4; border-color: #86efac; }
-            .pdf-macro-fiber { background: #f0fdf9; border-color: #6ee7b7; }
+            /* CLIENT INFO */
+            .pdf-client { display: grid; grid-template-columns: 2fr 1fr 1fr; align-items: center; gap: 16px; }
+            .pdf-client-id { display: flex; align-items: center; gap: 16px; }
+            .pdf-client-avatar { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+            .pdf-client-name { color: #2E2E2E; font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+            .pdf-client-email { color: #6E7C91; font-size: 13px; }
+            .pdf-kv { line-height: 2; }
+            .pdf-kv b { color: #1AB394; font-weight: 700; }
 
             /* MEALS */
-            .pdf-meal { margin-bottom: 18px; }
-            .pdf-meal-title { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb; }
-            .pdf-meal-time { background: #38C7A5; color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
-            .pdf-meal-name { font-size: 15px; font-weight: 700; color: #1f2937; }
-            .pdf-meal-items { list-style: none; padding: 0; }
-            .pdf-meal-items li { padding: 5px 0 5px 14px; border-bottom: 1px dashed #f3f4f6; position: relative; font-size: 12px; color: #374151; }
-            .pdf-meal-items li::before { content: '•'; position: absolute; left: 0; color: #38C7A5; font-weight: 700; }
-            .pdf-meal-items li:last-child { border-bottom: none; }
-            .pdf-qty { font-weight: 700; color: #38C7A5; margin-right: 4px; }
-            .pdf-equiv { color: #6b7280; font-style: italic; }
-            .pdf-or { color: #d1d5db; font-style: normal; font-weight: 600; }
+            .pdf-meal { margin-bottom: 16px; }
+            .pdf-meal-title { display: flex; align-items: baseline; gap: 16px; }
+            .pdf-meal-time { color: #1AB394; font-weight: 700; font-size: 13px; }
+            .pdf-meal-name { color: #2E2E2E; font-weight: 700; font-size: 14px; text-transform: uppercase; }
+            .pdf-meal ul { list-style: none; margin: 6px 0 0 26px; }
+            .pdf-meal li { position: relative; padding: 3px 0; color: #6E7C91; }
+            .pdf-meal li::before { content: '•'; color: #1AB394; font-weight: 900; position: absolute; left: -18px; }
+            .pdf-or { color: #1AB394; font-weight: 700; }
 
             /* RECS */
-            .pdf-recs { font-size: 12px; line-height: 1.7; color: #374151; }
-            .pdf-recs * { font-size: 12px !important; font-family: Arial, Helvetica, sans-serif !important; line-height: 1.7; }
+            .pdf-recs { color: #6E7C91; line-height: 1.7; }
+            .pdf-recs * { font-family: 'Lato', Arial, Helvetica, sans-serif !important; color: #6E7C91; line-height: 1.7; }
             .pdf-recs h1, .pdf-recs h2, .pdf-recs h3, .pdf-recs h4, .pdf-recs h5, .pdf-recs h6 { font-weight: 700; margin-bottom: 4px; }
             .pdf-recs p { margin-bottom: 6px; }
 
             /* FOOTER */
-            .pdf-footer { background: #f9fafb; border-top: 2px solid #38C7A5; padding: 14px 36px; display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
-            .pdf-footer-brand { font-size: 13px; font-weight: 700; color: #38C7A5; }
-            .pdf-footer-contact { font-size: 10px; color: #6b7280; text-align: right; line-height: 1.6; }
+            .pdf-footer { margin-top: 34px; border-top: 1px solid #C9D0DA; padding-top: 8px; text-align: right; color: #6E7C91; font-size: 12px; }
         </style>
 
         <div class="pdf-wrap">
             <!-- HEADER -->
             <div class="pdf-header">
-                <div class="pdf-logo-area">
-                    <div class="pdf-logo-circle">
-                        <img src="Logo_ML_Sin_Fondo.png" alt="" onerror="this.style.display='none'">
-                    </div>
-                    <div style="font-size:12px;font-weight:600;color:white;opacity:1;text-align:center;">Nutrición personalizada y salud</div>
+                <div class="pdf-logo">
+                    <img src="Logo_ML_Sin_Fondo.png" alt="ML Nutrición" onerror="this.style.display='none'">
                 </div>
                 <div class="pdf-contact">
-                    <strong>Mario Llanos</strong>
-                    Tel: +34 677 876 638<br>
-                    llanosnutricion@gmail.com<br>
-                    Servicio: En linea
+                    <span><i class="fa-solid fa-user"></i>Mario Llanos Nutrición</span>
+                    <span><i class="fa-solid fa-phone"></i>+34 677 876 638</span>
+                    <span><i class="fa-solid fa-envelope"></i>llanosnutricion@gmail.com</span>
+                    <span><i class="fa-solid fa-location-dot"></i>En línea</span>
                 </div>
             </div>
 
-            <!-- BANNER -->
-            <div class="pdf-banner">
-                <div class="pdf-banner-month">${mesActual} ${anioActual}</div>
-                <div class="pdf-banner-title">Plan Nutricional &middot; ${client.name} ${client.surname}</div>
-            </div>
-
-            <!-- DATOS CLIENTE -->
-            <div class="pdf-section">
-                <div class="pdf-section-title">Datos del cliente</div>
-                <div class="pdf-client-grid">
-                    <div class="pdf-stat pdf-stat-hl">
-                        <div class="pdf-stat-label">Nombre</div>
-                        <div class="pdf-stat-value">${client.name} ${client.surname}</div>
-                    </div>
-                    <div class="pdf-stat">
-                        <div class="pdf-stat-label">Edad</div>
-                        <div class="pdf-stat-value">${client.age} años</div>
-                    </div>
-                    <div class="pdf-stat">
-                        <div class="pdf-stat-label">Email</div>
-                        <div class="pdf-stat-value" style="font-size:9px">${client.email || '—'}</div>
-                    </div>
-                    <div class="pdf-stat">
-                        <div class="pdf-stat-label">Peso</div>
-                        <div class="pdf-stat-value">${peso ? peso + ' kg' : '—'}</div>
-                    </div>
-                    <div class="pdf-stat">
-                        <div class="pdf-stat-label">Altura</div>
-                        <div class="pdf-stat-value">${altura ? altura + ' cm' : '—'}</div>
-                    </div>
-                    <div class="pdf-stat">
-                        <div class="pdf-stat-label">IMC</div>
-                        <div class="pdf-stat-value">${imc || '—'} kg/m2</div>
+            <!-- INFORMACIONES DEL CLIENTE -->
+            <div class="pdf-section-title">Informaciones del cliente</div>
+            <div class="pdf-client">
+                <div class="pdf-client-id">
+                    <img class="pdf-client-avatar" src="${client.photo || 'avatar.png'}" alt="" onerror="this.src='avatar.png'">
+                    <div>
+                        <div class="pdf-client-name">${client.name} ${client.surname}</div>
+                        <div class="pdf-client-email">${client.email || ''}</div>
                     </div>
                 </div>
+                <div class="pdf-kv">
+                    <div><b>EDAD</b> ${client.age != null ? client.age + ' años' : '—'}</div>
+                    <div><b>IMC</b> ${imc || '—'} kg/m2</div>
+                </div>
+                <div class="pdf-kv">
+                    <div><b>ALTURA</b> ${altura ? altura + ' cm' : '—'}</div>
+                    <div><b>PESO</b> ${peso ? peso + ' kg' : '—'}</div>
+                </div>
             </div>
-
 
             <!-- COMIDAS -->
-            <div class="pdf-section" style="padding-top:0">
-                <div class="pdf-section-title">Plan de comidas</div>
-                ${comidasHtml
-                    .replace(/class="meal-block"/g,'class="pdf-meal"')
-                    .replace(/class="meal-title"/g,'class="pdf-meal-title"')
-                    .replace(/class="meal-time-badge"/g,'class="pdf-meal-time"')
-                    .replace(/class="meal-name"/g,'class="pdf-meal-name"')
-                    .replace(/class="meal-items"/g,'class="pdf-meal-items"')
-                    .replace(/class="qty"/g,'class="pdf-qty"')
-                    .replace(/class="equiv-item"/g,'class="pdf-equiv"')
-                    .replace(/class="or-sep"/g,'class="pdf-or"')
-                    || '<p style="color:#9ca3af;font-style:italic;">No hay comidas en el plan.</p>'}
-            </div>
+            <div class="pdf-section-title">Comidas</div>
+            ${comidasHtml || '<p style="font-style:italic;color:#9ca3af;">No hay comidas en el plan.</p>'}
 
             ${cleanRecsHtml ? `
             <!-- RECOMENDACIONES -->
-            <div class="pdf-section" style="padding-top:0">
-                <div class="pdf-section-title">Recomendaciones</div>
-                <div class="pdf-recs">${cleanRecsHtml}</div>
-            </div>` : ''}
+            <div class="pdf-section-title">Recomendaciones</div>
+            <div class="pdf-recs">${cleanRecsHtml}</div>` : ''}
 
             <!-- FOOTER -->
-            <div class="pdf-footer">
-                <div class="pdf-footer-brand">ML Nutricion</div>
-                <div class="pdf-footer-contact">
-                    Mario Llanos &middot; llanosnutricion@gmail.com &middot; +34 677 876 638
-                </div>
-            </div>
+            <div class="pdf-footer">(Mario Llanos Nutrición)</div>
         </div>`;
 
         // Mostrar previsualización editable antes de descargar
@@ -9660,6 +9591,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const pdfString = `<div style="width:794px;background:#fff;margin:0;padding:0;">${inner.innerHTML}</div>`;
         try {
+            // Asegura que la fuente Lato y los iconos Font Awesome estén cargados antes de rasterizar
+            if (document.fonts && document.fonts.ready) { await document.fonts.ready; }
             await html2pdf().set({
                 margin: [12, 0, 12, 0],
                 filename: pdfFileName,
